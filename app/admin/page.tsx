@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -18,10 +20,15 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-    // Placeholder — wire up to real auth later (Clerk / NextAuth / Supabase).
-    await new Promise((r) => setTimeout(r, 700));
-    setError("Authentication backend not yet connected.");
-    setSubmitting(false);
+    // Placeholder auth — accepts any non-empty credentials and goes to dashboard.
+    // Swap this for real auth (Clerk / NextAuth / Supabase) when ready.
+    await new Promise((r) => setTimeout(r, 600));
+    if (username.trim() && password.trim()) {
+      router.push("/dashboard");
+    } else {
+      setError("Please enter a username and password.");
+      setSubmitting(false);
+    }
   };
 
   return (
