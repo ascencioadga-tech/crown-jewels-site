@@ -114,6 +114,12 @@ export default function DashboardPage() {
       <header className="topbar">
         <div className="topbar-inner">
           <Link href="/dashboard" className="brand">
+            <span className="brand-logo-crop">
+              <img
+                src="/crown-jewels-logo.png"
+                alt="Crown Jewels Produce"
+              />
+            </span>
             <span className="brand-mark">
               Crown <em>Jewels</em>
             </span>
@@ -215,15 +221,21 @@ export default function DashboardPage() {
               return (
                 <div key={c.id} className={`commodity-card status-${status}`}>
                   <div className="cc-head">
-                    <div
-                      className="cc-img"
-                      aria-label={c.name}
-                      style={{
-                        background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}99 100%)`,
-                      }}
-                    >
-                      <span className="cc-img-mono">{c.name.charAt(0)}</span>
-                    </div>
+                    {c.image ? (
+                      <div className="cc-img cc-img-photo">
+                        <img src={c.image} alt={c.name} />
+                      </div>
+                    ) : (
+                      <div
+                        className="cc-img"
+                        aria-label={c.name}
+                        style={{
+                          background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}99 100%)`,
+                        }}
+                      >
+                        <span className="cc-img-mono">{c.name.charAt(0)}</span>
+                      </div>
+                    )}
                     <div className="cc-head-body">
                       <div className="cc-name">{c.name}</div>
                       <div className="cc-meta">

@@ -13,6 +13,7 @@ interface QuoteLine {
   name: string;
   group: string;
   accent: string;
+  image?: string;
   heat?: number;
   size: string;
   unit: string;
@@ -61,6 +62,7 @@ export default function SendQuotePage() {
           name: c.name,
           group: c.group,
           accent: c.accent,
+          image: c.image,
           heat: c.heat,
           size: s.size,
           unit: s.unit,
@@ -101,6 +103,12 @@ export default function SendQuotePage() {
       <header className="topbar">
         <div className="topbar-inner">
           <Link href="/dashboard" className="brand">
+            <span className="brand-logo-crop">
+              <img
+                src="/crown-jewels-logo.png"
+                alt="Crown Jewels Produce"
+              />
+            </span>
             <span className="brand-mark">
               Crown <em>Jewels</em>
             </span>
@@ -238,18 +246,24 @@ export default function SendQuotePage() {
 
             {/* Quote sheet preview */}
             <div className="quote-sheet">
+              <span className="qs-gold-rule" aria-hidden="true" />
               <div className="qs-head">
                 <div className="qs-brand">
-                  <span className="qs-brand-mark">
-                    Crown <em>Jewels</em>
+                  <span className="qs-brand-logo-crop" aria-hidden="true">
+                    <img src="/crown-jewels-logo.png" alt="" />
                   </span>
-                  <div className="qs-brand-meta">
-                    <div>Crown Jewels Produce · Fresno, California</div>
-                    <div>sales@crownjewelsproduce.com</div>
+                  <div>
+                    <span className="qs-brand-mark">
+                      Crown <em>Jewels</em>
+                    </span>
+                    <div className="qs-brand-meta">
+                      <div>Year-round produce programs · Grower-direct</div>
+                      <div>Fresno, California · sales@crownjewelsproduce.com</div>
+                    </div>
                   </div>
                 </div>
                 <div className="qs-meta">
-                  <div className="qs-label">Quote</div>
+                  <div className="qs-label">Daily Quote</div>
                   <div className="qs-id">{quoteId}</div>
                   <div className="qs-date">{longDate}</div>
                 </div>
@@ -275,13 +289,19 @@ export default function SendQuotePage() {
                       {items.map((l, i) => (
                         <div key={`${l.commodityId}-${i}`} className="qs-row qs-row-4">
                           <div className="qs-cell name">
-                            <span
-                              className="qs-cell-swatch"
-                              aria-hidden="true"
-                              style={{
-                                background: `linear-gradient(135deg, ${l.accent}33 0%, ${l.accent}99 100%)`,
-                              }}
-                            />
+                            {l.image ? (
+                              <span className="qs-cell-photo" aria-hidden="true">
+                                <img src={l.image} alt="" />
+                              </span>
+                            ) : (
+                              <span
+                                className="qs-cell-swatch"
+                                aria-hidden="true"
+                                style={{
+                                  background: `linear-gradient(135deg, ${l.accent}33 0%, ${l.accent}99 100%)`,
+                                }}
+                              />
+                            )}
                             <div>
                               <div className="qs-cell-name">{l.name}</div>
                               {l.heat && (
@@ -302,8 +322,34 @@ export default function SendQuotePage() {
               )}
 
               <div className="qs-foot">
-                <div>All prices FOB Fresno, CA · Subject to availability · Cold-chain monitored</div>
-                <div className="qs-thanks">— Crown Jewels Sales</div>
+                <span className="qs-gold-rule" aria-hidden="true" />
+                <div className="qs-foot-grid">
+                  <div className="qs-foot-block">
+                    <div className="qs-foot-label">Sourcing</div>
+                    <div className="qs-foot-text">
+                      California · Mexico · Peru · Chile · year-round program
+                    </div>
+                  </div>
+                  <div className="qs-foot-block">
+                    <div className="qs-foot-label">Terms</div>
+                    <div className="qs-foot-text">
+                      FOB Fresno, CA · Subject to availability · Cold-chain monitored
+                    </div>
+                  </div>
+                  <div className="qs-foot-block">
+                    <div className="qs-foot-label">Contact</div>
+                    <div className="qs-foot-text">
+                      sales@crownjewelsproduce.com<br />
+                      crownjewelsproduce.com
+                    </div>
+                  </div>
+                </div>
+                <div className="qs-thanks">
+                  <span>—</span>
+                  <span className="qs-thanks-mark">
+                    Crown <em>Jewels</em> Sales
+                  </span>
+                </div>
               </div>
             </div>
           </div>

@@ -10,8 +10,10 @@ export interface Commodity {
   id: string;
   name: string;
   group: string;
-  /** Accent color used for the placeholder image gradient. */
+  /** Accent color used as a fallback gradient when no image is set. */
   accent: string;
+  /** Optional product photo (under /public/produce/). Falls back to monogram. */
+  image?: string;
   category: "fruit" | "vegetable";
   heat?: 1 | 2 | 3 | 4 | 5;
   sizes: CommoditySize[];
@@ -145,30 +147,30 @@ const greenBeanSizes: CommoditySize[] = [
 
 export const commodities: Commodity[] = [
   // Fruits
-  { id: "table-grapes",     name: "Table Grapes",     group: "Grapes",       accent: "#5b1a3a", category: "fruit",     sizes: tableGrapeSizes,      availability: A.tableGrapes },
-  { id: "citrus",           name: "Citrus",           group: "Citrus",       accent: "#d27a1e", category: "fruit",     sizes: citrusSizes,          availability: A.citrus },
-  { id: "pomegranates",     name: "Pomegranates",     group: "Pomegranates", accent: "#7a1f2b", category: "fruit",     sizes: pomegranateSizes,     availability: A.pomegranates },
-  { id: "cherries",         name: "Cherries",         group: "Cherries",     accent: "#5b0e1a", category: "fruit",     sizes: cherrySizes,          availability: A.cherries },
-  { id: "melons",           name: "Melons",           group: "Melons",       accent: "#c89c3e", category: "fruit",     sizes: melonSizes,           availability: A.melons },
-  { id: "pears",            name: "Pears",            group: "Pears",        accent: "#9b9457", category: "fruit",     sizes: pearSizes,            availability: A.pears },
+  { id: "table-grapes",     name: "Table Grapes",     group: "Grapes",       accent: "#5b1a3a", image: "/produce/table-grapes.jpg", category: "fruit", sizes: tableGrapeSizes,    availability: A.tableGrapes },
+  { id: "citrus",           name: "Citrus",           group: "Citrus",       accent: "#d27a1e", image: "/produce/citrus.jpg",       category: "fruit", sizes: citrusSizes,        availability: A.citrus },
+  { id: "pomegranates",     name: "Pomegranates",     group: "Pomegranates", accent: "#7a1f2b", category: "fruit", sizes: pomegranateSizes, availability: A.pomegranates },
+  { id: "cherries",         name: "Cherries",         group: "Cherries",     accent: "#5b0e1a", category: "fruit", sizes: cherrySizes,      availability: A.cherries },
+  { id: "melons",           name: "Melons",           group: "Melons",       accent: "#c89c3e", image: "/produce/melons.jpg",       category: "fruit", sizes: melonSizes,         availability: A.melons },
+  { id: "pears",            name: "Pears",            group: "Pears",        accent: "#9b9457", category: "fruit", sizes: pearSizes,        availability: A.pears },
 
   // Vegetables — crossover
   { id: "asparagus",        name: "Asparagus",        group: "Asparagus",    accent: "#6b8a52", category: "vegetable", sizes: asparagusSizes,       availability: A.asparagus },
   { id: "brussels-sprouts", name: "Brussels Sprouts", group: "Greens",       accent: "#3e5028", category: "vegetable", sizes: brusselsSproutsSizes, availability: A.brusselsSprouts },
 
   // Peppers
-  { id: "bell-peppers",     name: "Bell Peppers",     group: "Peppers",      accent: "#c0341c", category: "vegetable", sizes: bellPepperSizes,      availability: A.bellPeppers },
-  { id: "chili-peppers",    name: "Chili Peppers",    group: "Peppers",      accent: "#a0291f", category: "vegetable", heat: 3, sizes: chiliPepperSizes, availability: A.chiliPeppers },
+  { id: "bell-peppers",     name: "Bell Peppers",     group: "Peppers",      accent: "#c0341c", image: "/produce/bell-peppers.jpg",  category: "vegetable", sizes: bellPepperSizes,  availability: A.bellPeppers },
+  { id: "chili-peppers",    name: "Chili Peppers",    group: "Peppers",      accent: "#a0291f", image: "/produce/chili-peppers.jpg", category: "vegetable", heat: 3, sizes: chiliPepperSizes, availability: A.chiliPeppers },
 
   // Warm-season vegetables
-  { id: "tomatoes",         name: "Tomatoes",         group: "Tomatoes",     accent: "#b03028", category: "vegetable", sizes: romaSizes,            availability: A.tomatoes },
-  { id: "cucumbers",        name: "Cucumbers",        group: "Cucumbers",    accent: "#4f5e36", category: "vegetable", sizes: cucumberSizes,        availability: A.cucumbers },
-  { id: "squash",           name: "Squash",           group: "Squash",       accent: "#b88b1d", category: "vegetable", sizes: squashSizes,          availability: A.squash },
-  { id: "eggplant",         name: "Eggplant",         group: "Eggplant",     accent: "#3b1f43", category: "vegetable", sizes: eggplantSizes,        availability: A.eggplant },
+  { id: "tomatoes",         name: "Tomatoes",         group: "Tomatoes",     accent: "#b03028", image: "/produce/tomatoes.jpg",  category: "vegetable", sizes: romaSizes,     availability: A.tomatoes },
+  { id: "cucumbers",        name: "Cucumbers",        group: "Cucumbers",    accent: "#4f5e36", image: "/produce/cucumbers.jpg", category: "vegetable", sizes: cucumberSizes, availability: A.cucumbers },
+  { id: "squash",           name: "Squash",           group: "Squash",       accent: "#b88b1d", image: "/produce/squash.jpg",    category: "vegetable", sizes: squashSizes,   availability: A.squash },
+  { id: "eggplant",         name: "Eggplant",         group: "Eggplant",     accent: "#3b1f43", image: "/produce/eggplant.jpg",  category: "vegetable", sizes: eggplantSizes, availability: A.eggplant },
 
   // Storage / green beans
-  { id: "onions",           name: "Onions",           group: "Roots",        accent: "#a4895a", category: "vegetable", sizes: onionSizes,           availability: A.onions },
-  { id: "green-beans",      name: "Green Beans",      group: "Greens",       accent: "#5c7a32", category: "vegetable", sizes: greenBeanSizes,       availability: A.greenBeans },
+  { id: "onions",           name: "Onions",           group: "Roots",        accent: "#a4895a", category: "vegetable", sizes: onionSizes, availability: A.onions },
+  { id: "green-beans",      name: "Green Beans",      group: "Greens",       accent: "#5c7a32", image: "/produce/green-beans.jpg", category: "vegetable", sizes: greenBeanSizes, availability: A.greenBeans },
 ];
 
 export const customers = [

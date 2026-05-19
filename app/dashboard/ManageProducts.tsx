@@ -172,15 +172,21 @@ export default function ManageProducts({
                           }
                         }}
                       >
-                        <div
-                          className="mc-img"
-                          aria-label={c.name}
-                          style={{
-                            background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}99 100%)`,
-                          }}
-                        >
-                          <span className="cc-img-mono">{c.name.charAt(0)}</span>
-                        </div>
+                        {c.image ? (
+                          <div className="mc-img mc-img-photo">
+                            <img src={c.image} alt={c.name} />
+                          </div>
+                        ) : (
+                          <div
+                            className="mc-img"
+                            aria-label={c.name}
+                            style={{
+                              background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}99 100%)`,
+                            }}
+                          >
+                            <span className="cc-img-mono">{c.name.charAt(0)}</span>
+                          </div>
+                        )}
                         <div className="mc-info">
                           <div className="mc-name">{c.name}</div>
                           <div className="mc-meta">
