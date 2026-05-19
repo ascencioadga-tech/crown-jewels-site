@@ -20,13 +20,13 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError("");
     setSubmitting(true);
-    // Placeholder auth — accepts any non-empty credentials and goes to dashboard.
-    // Swap this for real auth (Clerk / NextAuth / Supabase) when ready.
+    // Placeholder auth — client-side credential check only.
+    // Swap this for real auth (Clerk / NextAuth / Supabase) before production.
     await new Promise((r) => setTimeout(r, 600));
-    if (username.trim() && password.trim()) {
+    if (username.trim() === "Alejandro" && password === "Crownjewels") {
       router.push("/dashboard");
     } else {
-      setError("Please enter a username and password.");
+      setError("Invalid username or password.");
       setSubmitting(false);
     }
   };
