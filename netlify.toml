@@ -5,3 +5,16 @@
 # Static export from Next.js — no Netlify Next.js runtime needed.
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+# Don't let HTML pages get stuck in CDN cache after a redeploy.
+# (Hashed assets in /_next/static get their own immutable cache below.)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
