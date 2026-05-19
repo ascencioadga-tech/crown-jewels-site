@@ -1,0 +1,7 @@
+[build]
+  command   = "npm run build"
+  publish   = "out"
+
+# Static export from Next.js — no Netlify Next.js runtime needed.
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"

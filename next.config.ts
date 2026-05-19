@@ -1,12 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Skip /_next/image optimization so <Image> renders a plain <img> tag.
-  // We only have a logo + video, so we don't need responsive size generation —
-  // and this avoids the broken-image issue on Netlify deploys.
+  // Full static export — emits plain HTML files to /out, served directly by
+  // any static host. Avoids the Netlify Next.js runtime entirely.
+  // All routes in this app are static-prerendered, so nothing is lost.
+  output: "export",
+  // Required by `output: export` and also fixes the missing-logo issue.
   images: {
     unoptimized: true,
   },
+  // /dashboard → /dashboard/index.html (clean URLs)
+  trailingSlash: true,
 };
 
 export default nextConfig;
