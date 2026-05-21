@@ -1,0 +1,492 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { money } from "./data";
+import {
+  useOrders,
+  orderTotal,
+  type Order,
+  type OrderStatus,
+} from "./useOrders";
+import "./order-system.css";
+
+const STATUS_LABEL: Record<OrderStatus, string> = {
+  open: "Open",
+  confirmed: "Confirmed",
+  shipped: "Shipped",
+  invoiced: "Invoiced",
+  paid: "Paid",
+  cancelled: "Cancelled",
+};
+
+const STATUS_FLOW: OrderStatus[] = [
+  "open",
+  "confirmed",
+  "shipped",
+  "invoiced",
+  "paid",
+];
+
+type Tab = "orders" | "report";
+
+export default function OrderSystemPage() {
+  const { orders, hydrated, setStatus } = useOrders();
+  const [tab, setTab] = useState<Tab>("orders");
+  const [query, setQuery] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const dateText = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter(
+      (o) =>
+        o.orderNumber.toLowerCase().includes(q) ||
+        o.customerName.toLowerCase().includes(q) ||
+        o.customerPO.toLowerCase().includes(q) ||
+        o.destination.toLowerCase().includes(q)
+    );
+  }, [orders, query]);
+
+  const selected = orders.find((o) => o.id === openId) || null;
+
+  // Rob's report = one row per product line
+  const reportRows = useMemo(() => {
+    const rows: {
+      client: string;
+      destination: string;
+      orderDate: string;
+      shipDate: string;
+      po: string;
+      quantity: number;
+      product: string;
+      price: number;
+    }[] = [];
+    filtered.forEach((o) => {
+      o.lines.forEach((l) => {
+        rows.push({
+          client: o.customerName,
+          destination: o.destination,
+          orderDate: o.orderDate,
+          shipDate: o.shipDate,
+          po: o.customerPO,
+          quantity: l.quantity,
+          product: `${l.productName} ${l.size}`,
+          price: l.unitPrice,
+        });
+      });
+    });
+    return rows;
+  }, [filtered]);
+
+  const reportTSV = useMemo(() => {
+    const header = [
+      "Client",
+      "Destination",
+      "Order Date",
+      "Ship Date",
+      "Customer P.O.",
+      "Quantity",
+      "Product",
+      "Price",
+    ].join("\t");
+    const lines = reportRows.map((r) =>
+      [
+        r.client,
+        r.destination,
+        r.orderDate,
+        r.shipDate,
+        r.po,
+        r.quantity,
+        r.product,
+        r.price.toFixed(2),
+      ].join("\t")
+    );
+    return [header, ...lines].join("\n");
+  }, [reportRows]);
+
+  const copyReport = async () => {
+    try {
+      await navigator.clipboard.writeText(reportTSV);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  const downloadCSV = () => {
+    const csv = reportTSV
+      .split("\n")
+      .map((row) =>
+        row
+          .split("\t")
+          .map((cell) => `"${cell.replace(/"/g, '""')}"`)
+          .join(",")
+      )
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `crown-jewels-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="cj-os">
+      <header className="os-topbar">
+        <div className="os-topbar-inner">
+          <Link href="/dashboard" className="os-brand">
+            <span className="os-brand-logo">
+              <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
+            </span>
+            <span className="os-brand-mark">
+              Crown <em>Jewels</em>
+            </span>
+            <span className="os-brand-tag">Order System</span>
+          </Link>
+          <div className="os-topbar-date">
+            <span className="dot" />
+            <span>{dateText}</span>
+          </div>
+          <div className="os-search">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search orders, PO, customer…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="os-user">
+            <div className="os-avatar">CJ</div>
+            <Link href="/" className="os-logout">
+              Sign out
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="os-main">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="os-page-head"
+        >
+          <div>
+            <h1>
+              Orders<span className="accent">.</span>
+            </h1>
+            <p className="os-sub">
+              One entry feeds the order number, Rob&apos;s hourly report, and
+              the invoice. {orders.length} order
+              {orders.length === 1 ? "" : "s"} on file.
+            </p>
+          </div>
+          <Link href="/dashboard/order-system/new" className="os-btn primary">
+            + New order
+          </Link>
+        </motion.div>
+
+        <div className="os-tabs">
+          <button
+            className={tab === "orders" ? "active" : ""}
+            onClick={() => setTab("orders")}
+          >
+            Orders
+          </button>
+          <button
+            className={tab === "report" ? "active" : ""}
+            onClick={() => setTab("report")}
+          >
+            Rob&apos;s Report
+          </button>
+        </div>
+
+        {!hydrated ? (
+          <div className="os-empty">Loading…</div>
+        ) : tab === "orders" ? (
+          <OrdersTable
+            orders={filtered}
+            onOpen={(id) => setOpenId(id)}
+          />
+        ) : (
+          <div className="os-card os-report">
+            <div className="os-card-head">
+              <h2>Sales recap — for Rob</h2>
+              <div className="os-report-actions">
+                <button className="os-btn ghost sm" onClick={copyReport}>
+                  {copied ? "Copied ✓" : "Copy for Google Sheet"}
+                </button>
+                <button className="os-btn ghost sm" onClick={downloadCSV}>
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            <div className="os-report-scroll">
+              <table className="os-report-table">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Destination</th>
+                    <th>Order Date</th>
+                    <th>Ship Date</th>
+                    <th>Customer P.O.</th>
+                    <th className="num">Quantity</th>
+                    <th>Product</th>
+                    <th className="num">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportRows.map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.client}</td>
+                      <td>{r.destination}</td>
+                      <td>{r.orderDate}</td>
+                      <td>{r.shipDate}</td>
+                      <td>{r.po}</td>
+                      <td className="num">{r.quantity.toLocaleString()}</td>
+                      <td>{r.product}</td>
+                      <td className="num">{money(r.price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="os-report-note">
+              This is the live version of Rob&apos;s hourly sheet — same
+              columns. &quot;Copy for Google Sheet&quot; pastes straight into
+              his existing tab. (Auto-sync to his Sheet wires up in the backend
+              phase.)
+            </p>
+          </div>
+        )}
+      </main>
+
+      {/* Detail drawer */}
+      <AnimatePresence>
+        {selected && (
+          <OrderDrawer
+            key={selected.id}
+            order={selected}
+            onClose={() => setOpenId(null)}
+            onAdvance={(s) => setStatus(selected.id, s)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function OrdersTable({
+  orders,
+  onOpen,
+}: {
+  orders: Order[];
+  onOpen: (id: string) => void;
+}) {
+  if (orders.length === 0)
+    return <div className="os-empty">No orders yet. Create your first one.</div>;
+
+  return (
+    <div className="os-card">
+      <div className="os-table-scroll">
+        <table className="os-orders-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Destination</th>
+              <th>Ship Date</th>
+              <th>P.O.</th>
+              <th className="num">Lines</th>
+              <th className="num">Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id} onClick={() => onOpen(o.id)} className="clickable">
+                <td className="mono">{o.orderNumber}</td>
+                <td>
+                  <div className="os-cust">{o.customerName}</div>
+                  <div className="os-cust-ch">{o.channel}</div>
+                </td>
+                <td>{o.destination}</td>
+                <td>{o.shipDate}</td>
+                <td>{o.customerPO}</td>
+                <td className="num">{o.lines.length}</td>
+                <td className="num strong">{money(orderTotal(o))}</td>
+                <td>
+                  <StatusPill status={o.status} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: OrderStatus }) {
+  return <span className={`os-status ${status}`}>{STATUS_LABEL[status]}</span>;
+}
+
+function OrderDrawer({
+  order,
+  onClose,
+  onAdvance,
+}: {
+  order: Order;
+  onClose: () => void;
+  onAdvance: (s: OrderStatus) => void;
+}) {
+  const total = orderTotal(order);
+  const idx = STATUS_FLOW.indexOf(order.status);
+  const next = idx >= 0 && idx < STATUS_FLOW.length - 1 ? STATUS_FLOW[idx + 1] : null;
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="os-backdrop"
+        onClick={onClose}
+      />
+      <motion.aside
+        initial={{ x: 40, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 40, opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="os-drawer"
+        role="dialog"
+        aria-label={`Order ${order.orderNumber}`}
+      >
+        <header className="os-drawer-head">
+          <div>
+            <span className="os-drawer-num">{order.orderNumber}</span>
+            <StatusPill status={order.status} />
+          </div>
+          <button className="os-icon-btn" onClick={onClose} aria-label="Close">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </header>
+
+        <div className="os-drawer-body">
+          <h3 className="os-drawer-cust">{order.customerName}</h3>
+          <div className="os-drawer-meta">
+            <Meta label="Destination" value={order.destination} />
+            <Meta label="Customer P.O." value={order.customerPO} />
+            <Meta label="Order date" value={order.orderDate} />
+            <Meta label="Ship date" value={order.shipDate} />
+            <Meta label="Salesperson" value={order.salesperson} />
+            <Meta label="Terms" value={order.terms} />
+          </div>
+
+          <div className="os-drawer-section">
+            <div className="os-drawer-section-head">Products</div>
+            <table className="os-drawer-lines">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Size · Pack</th>
+                  <th className="num">Qty</th>
+                  <th className="num">Unit</th>
+                  <th className="num">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.lines.map((l) => (
+                  <tr key={l.id}>
+                    <td>{l.productName}</td>
+                    <td className="dim">
+                      {l.size} · {l.unit}
+                    </td>
+                    <td className="num">{l.quantity.toLocaleString()}</td>
+                    <td className="num">{money(l.unitPrice)}</td>
+                    <td className="num strong">
+                      {money(l.quantity * l.unitPrice)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4}>Order total</td>
+                  <td className="num strong">{money(total)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          {order.notes && (
+            <div className="os-drawer-section">
+              <div className="os-drawer-section-head">Notes</div>
+              <p className="os-drawer-notes">{order.notes}</p>
+            </div>
+          )}
+
+          <div className="os-drawer-section">
+            <div className="os-drawer-section-head">Status history</div>
+            <ul className="os-timeline">
+              {order.history.map((h, i) => (
+                <li key={i}>
+                  <span className="os-timeline-dot" />
+                  <span className="os-timeline-status">
+                    {STATUS_LABEL[h.status]}
+                  </span>
+                  <span className="os-timeline-meta">
+                    {new Date(h.at).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}{" "}
+                    · {h.by}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <footer className="os-drawer-foot">
+          <button className="os-btn ghost" disabled title="Invoicing — next milestone">
+            Generate invoice
+          </button>
+          {next && (
+            <button className="os-btn primary" onClick={() => onAdvance(next)}>
+              Mark {STATUS_LABEL[next]}
+            </button>
+          )}
+        </footer>
+      </motion.aside>
+    </>
+  );
+}
+
+function Meta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="os-meta-item">
+      <span className="os-meta-label">{label}</span>
+      <span className="os-meta-value">{value}</span>
+    </div>
+  );
+}

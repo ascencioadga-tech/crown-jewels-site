@@ -1,0 +1,323 @@
+/* Crown Jewels — dashboard home / app launcher */
+
+.cj-home {
+  min-height: 100vh;
+  background: #f6f1e7;
+  color: #0e1411;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ---- Topbar ---- */
+.cj-home .home-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(251, 247, 238, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(14, 20, 17, 0.07);
+}
+.cj-home .home-topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.cj-home .home-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.cj-home .home-brand-logo {
+  position: relative;
+  display: block;
+  width: 60px;
+  height: 36px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cj-home .home-brand-logo img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  height: 60px;
+  width: auto;
+  max-width: none;
+}
+.cj-home .home-brand-mark {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: #0e1411;
+  line-height: 1;
+}
+.cj-home .home-brand-mark em {
+  font-style: italic;
+  color: #7a1f2b;
+}
+
+.cj-home .home-topbar-date {
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(14, 20, 17, 0.55);
+  font-size: 13px;
+}
+.cj-home .home-topbar-date .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4f5e36;
+  box-shadow: 0 0 0 0 rgba(79, 94, 54, 0.5);
+  animation: home-pulse 2.4s ease-in-out infinite;
+}
+@keyframes home-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 94, 54, 0.5); }
+  50% { box-shadow: 0 0 0 7px rgba(79, 94, 54, 0); }
+}
+
+.cj-home .home-user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cj-home .home-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #7a1f2b;
+  color: #f6f1e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.cj-home .home-user-name {
+  font-size: 13px;
+  color: rgba(14, 20, 17, 0.7);
+}
+.cj-home .home-logout {
+  font-size: 12px;
+  color: rgba(14, 20, 17, 0.5);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 20, 17, 0.12);
+  transition: all 0.2s;
+}
+.cj-home .home-logout:hover {
+  color: #7a1f2b;
+  border-color: rgba(122, 31, 43, 0.4);
+}
+
+/* ---- Main ---- */
+.cj-home .home-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.cj-home .home-welcome {
+  margin-bottom: 48px;
+}
+.cj-home .flex-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.cj-home .flex-eyebrow .rule {
+  width: 40px;
+  height: 1px;
+  background: #b8853e;
+}
+.cj-home .flex-eyebrow .eyebrow-text {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.6);
+  font-weight: 500;
+}
+.cj-home .home-welcome h1 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: #0e1411;
+}
+.cj-home .home-welcome h1 .accent {
+  font-style: italic;
+  color: #7a1f2b;
+}
+.cj-home .home-welcome p {
+  margin-top: 18px;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(14, 20, 17, 0.6);
+}
+
+/* ---- App grid ---- */
+.cj-home .home-app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 900px) {
+  .cj-home .home-app-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .cj-home .home-app-grid { grid-template-columns: 1fr; }
+}
+
+.cj-home .app-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fbf7ee;
+  border: 1px solid rgba(14, 20, 17, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cj-home .app-card.is-active {
+  cursor: pointer;
+}
+.cj-home .app-card.is-active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, #b8853e 50%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.cj-home .app-card.is-active:hover {
+  border-color: rgba(14, 20, 17, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px -24px rgba(14, 20, 17, 0.28);
+}
+.cj-home .app-card.is-active:hover::before {
+  opacity: 1;
+}
+.cj-home .app-card.is-soon {
+  opacity: 0.7;
+}
+
+/* Preview banner at the top of each card */
+.cj-home .app-preview {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #f0ead9;
+  border-bottom: 1px solid rgba(14, 20, 17, 0.07);
+}
+.cj-home .app-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cj-home .app-card.is-active:hover .app-preview img {
+  transform: scale(1.03);
+}
+.cj-home .app-preview-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cj-home .app-preview-icon svg {
+  width: 40px;
+  height: 40px;
+  opacity: 0.55;
+}
+
+.cj-home .app-body {
+  flex: 1;
+  padding: 22px 24px 0;
+}
+.cj-home .app-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.cj-home .app-card h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #0e1411;
+  line-height: 1.1;
+}
+.cj-home .app-card p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(14, 20, 17, 0.6);
+  padding-bottom: 20px;
+}
+
+.cj-home .app-badge {
+  flex-shrink: 0;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.cj-home .app-badge.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(79, 94, 54, 0.12);
+  color: #3a4525;
+}
+.cj-home .app-badge.live .live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #4f5e36;
+  animation: home-pulse 2.4s ease-in-out infinite;
+}
+.cj-home .app-badge.soon {
+  background: rgba(14, 20, 17, 0.06);
+  color: rgba(14, 20, 17, 0.45);
+}
+
+.cj-home .app-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a1f2b;
+  padding: 0 24px 22px;
+  transition: gap 0.25s;
+}
+.cj-home .app-card.is-active:hover .app-cta {
+  gap: 11px;
+}

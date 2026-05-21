@@ -120,7 +120,7 @@ export default function SendQuotePage() {
             <span>{dateText}</span>
           </div>
 
-          <Link href="/dashboard" className="btn btn-ghost btn-sm">
+          <Link href="/dashboard/daily-quote" className="btn btn-ghost btn-sm">
             <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
