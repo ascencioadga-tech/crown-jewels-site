@@ -85,7 +85,12 @@ export function useOrders() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setOrders(read());
+    // One-time cleanup: purge legacy demo/seed orders left in any browser
+    // from before the seed was removed.
+    const all = read();
+    const cleaned = all.filter((o) => !o.id.startsWith("seed-"));
+    if (cleaned.length !== all.length) write(cleaned);
+    setOrders(cleaned);
     setHydrated(true);
   }, []);
 
