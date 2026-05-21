@@ -21,6 +21,7 @@ export const TERMS_OPTIONS = [
 ] as const;
 
 export const SALESPEOPLE = [
+  "Carlos",
   "Alejandro",
   "Marisol",
   "Diego",
@@ -28,6 +29,8 @@ export const SALESPEOPLE = [
 ] as const;
 
 export const CUSTOMERS: Customer[] = [
+  { id: "calixtro",     name: "Calixtro Dist.",               channel: "Wholesale",        destination: "",                 terms: "Net 21",       contact: "" },
+  { id: "fresh-direct", name: "Fresh Direct",                 channel: "Retail",           destination: "",                 terms: "Net 21",       contact: "" },
   { id: "kr-cal",     name: "Kroger — California Division", channel: "Retail",           destination: "Compton, CA",      terms: "Net 21",       contact: "ap@kroger.com" },
   { id: "albertsons", name: "Albertsons / Safeway",         channel: "Retail",           destination: "Tracy, CA",        terms: "Net 21",       contact: "produce.ap@albertsons.com" },
   { id: "sysco-la",   name: "Sysco Los Angeles",            channel: "Foodservice",      destination: "City of Industry, CA", terms: "Net 14",   contact: "ap@sysco.com" },

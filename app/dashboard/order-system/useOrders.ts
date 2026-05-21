@@ -80,17 +80,87 @@ export function orderTotal(o: Order): number {
   return o.lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
 }
 
+// ---- Real orders recorded from the 05/21/2026 blue sheets (Carlos) ----
+// Order number = blue-sheet FILE#. Imported once per browser; deletable.
+const BLUESHEET_IMPORT_KEY = "cj_bluesheet_import_20260521";
+
+function blueLine(
+  id: string,
+  commodityId: string,
+  productName: string,
+  size: string,
+  quantity: number,
+  unitPrice: number
+): OrderLine {
+  return { id, commodityId, productName, size, unit: "", pallet: "", quantity, unitPrice };
+}
+
+function blueOrder(
+  file: string,
+  customerId: string,
+  customerName: string,
+  channel: string,
+  po: string,
+  lines: OrderLine[],
+  notes?: string
+): Order {
+  const at = "2026-05-21T09:00:00.000Z";
+  return {
+    id: `bs-${file}`,
+    orderNumber: file,
+    customerId,
+    customerName,
+    channel,
+    destination: "",
+    customerPO: po,
+    orderDate: "2026-05-21",
+    shipDate: "2026-05-21",
+    salesperson: "Carlos",
+    terms: "Net 21",
+    status: "open",
+    lines,
+    notes,
+    createdAt: at,
+    history: [{ status: "open", at, by: "Carlos" }],
+  };
+}
+
+const BLUESHEET_ORDERS: Order[] = [
+  blueOrder("348300", "calixtro", "Calixtro Dist.", "Wholesale", "158751", [
+    blueLine("bs-348300-0", "cucumbers", "Cucumbers", "SS", 420, 26.95),
+    blueLine("bs-348300-1", "cucumbers", "Cucumbers", "36", 810, 12.95),
+  ]),
+  blueOrder("348301", "fresh-direct", "Fresh Direct", "Retail", "N44974", [
+    blueLine("bs-348301-0", "cucumbers", "Cucumbers", "LG", 42, 22.95),
+  ]),
+  blueOrder("348304", "calixtro", "Calixtro Dist.", "Wholesale", "158752", [
+    blueLine("bs-348304-0", "melons", "Honeydew", "6", 1540, 5.0),
+  ], "Grower: Agt #2"),
+  blueOrder("348315", "calixtro", "Calixtro Dist.", "Wholesale", "158762", [
+    blueLine("bs-348315-0", "cucumbers", "Cucumbers", "36", 1620, 12.95),
+  ], "Grower: Agt #2"),
+];
+
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // One-time cleanup: purge legacy demo/seed orders left in any browser
-    // from before the seed was removed.
-    const all = read();
-    const cleaned = all.filter((o) => !o.id.startsWith("seed-"));
-    if (cleaned.length !== all.length) write(cleaned);
-    setOrders(cleaned);
+    // Purge legacy demo/seed orders left from before the seed was removed.
+    let all = read().filter((o) => !o.id.startsWith("seed-"));
+
+    // One-time import of the recorded blue-sheet orders.
+    try {
+      if (!localStorage.getItem(BLUESHEET_IMPORT_KEY)) {
+        const have = new Set(all.map((o) => o.orderNumber));
+        const toAdd = BLUESHEET_ORDERS.filter((o) => !have.has(o.orderNumber));
+        all = [...toAdd, ...all];
+        localStorage.setItem(BLUESHEET_IMPORT_KEY, "1");
+      }
+    } catch {}
+
+    write(all);
+    setOrders(all);
     setHydrated(true);
   }, []);
 

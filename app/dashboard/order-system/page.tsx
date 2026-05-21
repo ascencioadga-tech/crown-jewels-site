@@ -417,7 +417,8 @@ function OrderDrawer({
                   <tr key={l.id}>
                     <td>{l.productName}</td>
                     <td className="dim">
-                      {l.size} · {l.unit}
+                      {l.size}
+                      {l.unit ? ` · ${l.unit}` : ""}
                     </td>
                     <td className="num">{l.quantity.toLocaleString()}</td>
                     <td className="num">{money(l.unitPrice)}</td>
