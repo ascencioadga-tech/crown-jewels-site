@@ -7,6 +7,7 @@ import { commodities, sizeKey } from "./data";
 import { usePrices } from "./usePrices";
 import { useProductConfig } from "./useProductConfig";
 import ManageProducts from "./ManageProducts";
+import { CURRENT_USER, firstName } from "../user";
 import "./dashboard.css";
 
 const filters = [
@@ -143,9 +144,9 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="user-menu" title="Crown Jewels Team">
-            <div className="avatar">CJ</div>
-            <div className="user-name">Crown Jewels Team</div>
+          <div className="user-menu" title={CURRENT_USER.name}>
+            <div className="avatar">{CURRENT_USER.initials}</div>
+            <div className="user-name">{CURRENT_USER.name}</div>
             <Link href="/" className="logout-link">
               Sign out
             </Link>
@@ -162,7 +163,7 @@ export default function DashboardPage() {
         >
           <div>
             <h1>
-              Good morning, team.<br />
+              Good morning, {firstName(CURRENT_USER.name)}.<br />
               <span className="accent">Set today&apos;s prices.</span>
             </h1>
             <p className="sub">

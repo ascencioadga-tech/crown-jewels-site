@@ -17,6 +17,7 @@ import {
   type PaymentMethod,
   type AgingBucket,
 } from "../useOrders";
+import { CURRENT_USER } from "../../user";
 import "../order-system.css";
 
 const BUCKETS: { key: AgingBucket; label: string }[] = [
@@ -94,7 +95,9 @@ export default function ReceivablesPage() {
             <span>{dateText}</span>
           </div>
           <div className="os-user">
-            <div className="os-avatar">CJ</div>
+            <div className="os-avatar" title={CURRENT_USER.name}>
+              {CURRENT_USER.initials}
+            </div>
             <Link href="/" className="os-logout">
               Sign out
             </Link>

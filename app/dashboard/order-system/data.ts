@@ -21,7 +21,7 @@ export const TERMS_OPTIONS = [
 ] as const;
 
 export const SALESPEOPLE = [
-  "Carlos",
+  "Carlos Encinas",
   "Alejandro",
   "Marisol",
   "Diego",

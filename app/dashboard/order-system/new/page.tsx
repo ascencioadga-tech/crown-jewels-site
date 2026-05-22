@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { SALESPEOPLE, TERMS_OPTIONS, commodities, money } from "../data";
+import { CURRENT_USER } from "../../user";
 import {
   nextOrderNumber,
   useOrders,
@@ -358,7 +359,9 @@ function Topbar() {
           <span className="os-brand-tag">Order System</span>
         </Link>
         <div className="os-user">
-          <div className="os-avatar">CJ</div>
+          <div className="os-avatar" title={CURRENT_USER.name}>
+            {CURRENT_USER.initials}
+          </div>
           <Link href="/" className="os-logout">
             Sign out
           </Link>

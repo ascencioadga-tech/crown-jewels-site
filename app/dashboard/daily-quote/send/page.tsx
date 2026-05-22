@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { commodities, customers, sizeKey } from "../data";
 import { usePrices, useSelectedClients } from "../usePrices";
 import { useProductConfig } from "../useProductConfig";
+import { CURRENT_USER } from "../../user";
 import "../dashboard.css";
 
 interface QuoteLine {
@@ -42,7 +43,7 @@ export default function SendQuotePage() {
 
   const [subject, setSubject] = useState(`Crown Jewels — Daily Quote · ${longDate}`);
   const [message, setMessage] = useState(
-    "Good morning,\n\nPlease find today's Crown Jewels Produce availability and pricing below. All prices FOB Fresno, CA. Reply with your needs and we'll have a confirmation back to you within the hour.\n\nBest,\nCrown Jewels Sales"
+    `Good morning,\n\nPlease find today's Crown Jewels Produce availability and pricing below. All prices FOB Fresno, CA. Reply with your needs and we'll have a confirmation back to you within the hour.\n\nBest,\n${CURRENT_USER.name} · Crown Jewels Sales`
   );
   const [showSent, setShowSent] = useState(false);
 
@@ -127,9 +128,9 @@ export default function SendQuotePage() {
             Back to availability
           </Link>
 
-          <div className="user-menu" title="Crown Jewels Team" style={{ marginLeft: "auto" }}>
-            <div className="avatar">CJ</div>
-            <div className="user-name">Crown Jewels Team</div>
+          <div className="user-menu" title={CURRENT_USER.name} style={{ marginLeft: "auto" }}>
+            <div className="avatar">{CURRENT_USER.initials}</div>
+            <div className="user-name">{CURRENT_USER.name}</div>
             <Link href="/" className="logout-link">
               Sign out
             </Link>
@@ -192,8 +193,8 @@ export default function SendQuotePage() {
             <div className="email-row">
               <label>From</label>
               <div className="email-pill from">
-                <span className="avatar">CJ</span>
-                Crown Jewels Sales · sales@crownjewelsproduce.com
+                <span className="avatar">{CURRENT_USER.initials}</span>
+                {CURRENT_USER.name} · {CURRENT_USER.email}
               </div>
             </div>
             <div className="email-row">

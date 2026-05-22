@@ -11,6 +11,7 @@ import {
   type OrderStatus,
 } from "./useOrders";
 import InvoiceOverlay from "./InvoiceOverlay";
+import { CURRENT_USER } from "../user";
 import "./order-system.css";
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
@@ -69,9 +70,10 @@ export default function OrderSystemPage() {
   const selected = orders.find((o) => o.id === openId) || null;
   const invoiceOrder = orders.find((o) => o.id === invoiceId) || null;
 
-  // Rob's report = one row per product line
+  // Rob's report = one row per product line, across ALL salesmen
   const reportRows = useMemo(() => {
     const rows: {
+      salesman: string;
       client: string;
       destination: string;
       orderDate: string;
@@ -84,6 +86,7 @@ export default function OrderSystemPage() {
     filtered.forEach((o) => {
       o.lines.forEach((l) => {
         rows.push({
+          salesman: o.salesperson,
           client: o.customerName,
           destination: o.destination,
           orderDate: o.orderDate,
@@ -100,6 +103,7 @@ export default function OrderSystemPage() {
 
   const reportTSV = useMemo(() => {
     const header = [
+      "Salesman",
       "Client",
       "Destination",
       "Order Date",
@@ -111,6 +115,7 @@ export default function OrderSystemPage() {
     ].join("\t");
     const lines = reportRows.map((r) =>
       [
+        r.salesman,
         r.client,
         r.destination,
         r.orderDate,
@@ -186,7 +191,9 @@ export default function OrderSystemPage() {
             />
           </div>
           <div className="os-user">
-            <div className="os-avatar">CJ</div>
+            <div className="os-avatar" title={CURRENT_USER.name}>
+              {CURRENT_USER.initials}
+            </div>
             <Link href="/" className="os-logout">
               Sign out
             </Link>
@@ -255,6 +262,7 @@ export default function OrderSystemPage() {
               <table className="os-report-table">
                 <thead>
                   <tr>
+                    <th>Salesman</th>
                     <th>Client</th>
                     <th>Destination</th>
                     <th>Order Date</th>
@@ -268,6 +276,7 @@ export default function OrderSystemPage() {
                 <tbody>
                   {reportRows.map((r, i) => (
                     <tr key={i}>
+                      <td>{r.salesman}</td>
                       <td>{r.client}</td>
                       <td>{r.destination}</td>
                       <td>{r.orderDate}</td>
@@ -282,10 +291,10 @@ export default function OrderSystemPage() {
               </table>
             </div>
             <p className="os-report-note">
-              This is the live version of Rob&apos;s hourly sheet — same
-              columns. &quot;Copy for Google Sheet&quot; pastes straight into
-              his existing tab. (Auto-sync to his Sheet wires up in the backend
-              phase.)
+              Rob&apos;s live sheet — aggregated across <strong>all
+              salesmen</strong>, one row per product line. &quot;Copy for
+              Google Sheet&quot; pastes straight into his existing tab.
+              (Auto-sync to his Sheet wires up in the backend phase.)
             </p>
           </div>
         )}

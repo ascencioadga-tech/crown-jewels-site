@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { CURRENT_USER, firstName } from "./user";
 import "./dashboard-home.css";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -75,8 +76,8 @@ export default function DashboardHome() {
           </div>
 
           <div className="home-user">
-            <div className="home-avatar">CJ</div>
-            <div className="home-user-name">Crown Jewels Team</div>
+            <div className="home-avatar">{CURRENT_USER.initials}</div>
+            <div className="home-user-name">{CURRENT_USER.name}</div>
             <Link href="/" className="home-logout">
               Sign out
             </Link>
@@ -96,7 +97,7 @@ export default function DashboardHome() {
             <span className="eyebrow-text">Team Workspace</span>
           </div>
           <h1>
-            Welcome back, team.
+            Welcome back, {firstName(CURRENT_USER.name)}.
             <br />
             <span className="accent">Your Crown Jewels workspace.</span>
           </h1>
