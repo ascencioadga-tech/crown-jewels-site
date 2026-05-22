@@ -7,6 +7,7 @@ import { commodities, sizeKey } from "./data";
 import { usePrices } from "./usePrices";
 import { useProductConfig } from "./useProductConfig";
 import ManageProducts from "./ManageProducts";
+import Topbar from "../Topbar";
 import { CURRENT_USER, firstName } from "../user";
 import "./dashboard.css";
 
@@ -39,12 +40,6 @@ const FILTER_GROUPS: Record<string, string[]> = {
 export default function DashboardPage() {
   const today = new Date();
   const month = today.getMonth();
-  const dateText = today.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
 
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [query, setQuery] = useState("");
@@ -112,47 +107,14 @@ export default function DashboardPage() {
 
   return (
     <div className="tf-dash">
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link href="/dashboard" className="brand">
-            <span className="brand-logo-crop">
-              <img
-                src="/crown-jewels-logo.png"
-                alt="Crown Jewels Produce"
-              />
-            </span>
-            <span className="brand-mark">
-              Crown <em>Jewels</em>
-            </span>
-            <span className="brand-tag">Daily Quote</span>
-          </Link>
-
-          <div className="topbar-date">
-            <span className="dot" />
-            <span>{dateText}</span>
-          </div>
-
-          <div className="search">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <input
-              type="search"
-              placeholder="Search commodities…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="user-menu" title={CURRENT_USER.name}>
-            <div className="avatar">{CURRENT_USER.initials}</div>
-            <div className="user-name">{CURRENT_USER.name}</div>
-            <Link href="/" className="logout-link">
-              Sign out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Topbar
+        tool="Daily Quote"
+        search={{
+          value: query,
+          onChange: setQuery,
+          placeholder: "Search commodities…",
+        }}
+      />
 
       <main>
         <motion.div

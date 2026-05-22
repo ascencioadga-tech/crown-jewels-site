@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { SALESPEOPLE, TERMS_OPTIONS, commodities, money } from "../data";
-import { CURRENT_USER } from "../../user";
+import Topbar from "../../Topbar";
 import {
   nextOrderNumber,
   useOrders,
@@ -118,7 +118,7 @@ export default function NewOrderPage() {
 
   return (
     <div className="cj-os">
-      <Topbar />
+      <Topbar tool="Order System" />
 
       <main className="os-main os-narrow">
         <motion.div
@@ -342,32 +342,6 @@ export default function NewOrderPage() {
         </form>
       </main>
     </div>
-  );
-}
-
-function Topbar() {
-  return (
-    <header className="os-topbar">
-      <div className="os-topbar-inner">
-        <Link href="/dashboard" className="os-brand">
-          <span className="os-brand-logo">
-            <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
-          </span>
-          <span className="os-brand-mark">
-            Crown <em>Jewels</em>
-          </span>
-          <span className="os-brand-tag">Order System</span>
-        </Link>
-        <div className="os-user">
-          <div className="os-avatar" title={CURRENT_USER.name}>
-            {CURRENT_USER.initials}
-          </div>
-          <Link href="/" className="os-logout">
-            Sign out
-          </Link>
-        </div>
-      </div>
-    </header>
   );
 }
 

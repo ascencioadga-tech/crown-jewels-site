@@ -17,7 +17,7 @@ import {
   type PaymentMethod,
   type AgingBucket,
 } from "../useOrders";
-import { CURRENT_USER } from "../../user";
+import Topbar from "../../Topbar";
 import "../order-system.css";
 
 const BUCKETS: { key: AgingBucket; label: string }[] = [
@@ -32,13 +32,6 @@ export default function ReceivablesPage() {
   const { orders, hydrated, recordPayment } = useOrders();
   const [showPaid, setShowPaid] = useState(false);
   const [payId, setPayId] = useState<string | null>(null);
-
-  const dateText = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
 
   // Receivables = invoiced orders. Open ones by default.
   const invoiced = useMemo(
@@ -73,37 +66,13 @@ export default function ReceivablesPage() {
 
   return (
     <div className="cj-os">
-      <header className="os-topbar">
-        <div className="os-topbar-inner">
-          <Link href="/dashboard" className="os-brand">
-            <span className="os-brand-logo">
-              <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
-            </span>
-            <span className="os-brand-mark">
-              Crown <em>Jewels</em>
-            </span>
-            <span className="os-brand-tag">Order System</span>
-          </Link>
-          <nav className="os-nav">
-            <Link href="/dashboard/order-system">Orders</Link>
-            <Link href="/dashboard/order-system/receivables" className="active">
-              Receivables
-            </Link>
-          </nav>
-          <div className="os-topbar-date">
-            <span className="dot" />
-            <span>{dateText}</span>
-          </div>
-          <div className="os-user">
-            <div className="os-avatar" title={CURRENT_USER.name}>
-              {CURRENT_USER.initials}
-            </div>
-            <Link href="/" className="os-logout">
-              Sign out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Topbar
+        tool="Order System"
+        nav={[
+          { label: "Orders", href: "/dashboard/order-system" },
+          { label: "Receivables", href: "/dashboard/order-system/receivables", active: true },
+        ]}
+      />
 
       <main className="os-main">
         <motion.div

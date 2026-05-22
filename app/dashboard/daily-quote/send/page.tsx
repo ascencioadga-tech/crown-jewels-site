@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { commodities, customers, sizeKey } from "../data";
 import { usePrices, useSelectedClients } from "../usePrices";
 import { useProductConfig } from "../useProductConfig";
+import Topbar from "../../Topbar";
 import { CURRENT_USER } from "../../user";
 import "../dashboard.css";
 
@@ -24,12 +25,6 @@ interface QuoteLine {
 
 export default function SendQuotePage() {
   const today = new Date();
-  const dateText = today.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
   const longDate = today.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -101,42 +96,13 @@ export default function SendQuotePage() {
 
   return (
     <div className="tf-dash tf-send">
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link href="/dashboard" className="brand">
-            <span className="brand-logo-crop">
-              <img
-                src="/crown-jewels-logo.png"
-                alt="Crown Jewels Produce"
-              />
-            </span>
-            <span className="brand-mark">
-              Crown <em>Jewels</em>
-            </span>
-            <span className="brand-tag">Daily Quote</span>
-          </Link>
-
-          <div className="topbar-date">
-            <span className="dot" />
-            <span>{dateText}</span>
-          </div>
-
-          <Link href="/dashboard/daily-quote" className="btn btn-ghost btn-sm">
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            Back to availability
-          </Link>
-
-          <div className="user-menu" title={CURRENT_USER.name} style={{ marginLeft: "auto" }}>
-            <div className="avatar">{CURRENT_USER.initials}</div>
-            <div className="user-name">{CURRENT_USER.name}</div>
-            <Link href="/" className="logout-link">
-              Sign out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Topbar
+        tool="Daily Quote"
+        nav={[
+          { label: "Availability", href: "/dashboard/daily-quote" },
+          { label: "Send", href: "/dashboard/daily-quote/send", active: true },
+        ]}
+      />
 
       <main className="send-main">
         {/* LEFT: client picker sidebar */}

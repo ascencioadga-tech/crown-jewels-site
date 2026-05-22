@@ -11,7 +11,7 @@ import {
   type OrderStatus,
 } from "./useOrders";
 import InvoiceOverlay from "./InvoiceOverlay";
-import { CURRENT_USER } from "../user";
+import Topbar from "../Topbar";
 import "./order-system.css";
 
 const ACCENT_BY_ID: Record<string, string> = Object.fromEntries(
@@ -63,13 +63,6 @@ export default function OrderSystemPage() {
     if (o && !o.invoice) generateInvoice(id);
     setInvoiceId(id);
   };
-
-  const dateText = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -174,48 +167,18 @@ export default function OrderSystemPage() {
 
   return (
     <div className="cj-os">
-      <header className="os-topbar">
-        <div className="os-topbar-inner">
-          <Link href="/dashboard" className="os-brand">
-            <span className="os-brand-logo">
-              <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
-            </span>
-            <span className="os-brand-mark">
-              Crown <em>Jewels</em>
-            </span>
-            <span className="os-brand-tag">Order System</span>
-          </Link>
-          <nav className="os-nav">
-            <Link href="/dashboard/order-system" className="active">
-              Orders
-            </Link>
-            <Link href="/dashboard/order-system/receivables">Receivables</Link>
-          </nav>
-          <div className="os-topbar-date">
-            <span className="dot" />
-            <span>{dateText}</span>
-          </div>
-          <div className="os-search">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <input
-              type="search"
-              placeholder="Search orders, PO, customer…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-          <div className="os-user">
-            <div className="os-avatar" title={CURRENT_USER.name}>
-              {CURRENT_USER.initials}
-            </div>
-            <Link href="/" className="os-logout">
-              Sign out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Topbar
+        tool="Order System"
+        nav={[
+          { label: "Orders", href: "/dashboard/order-system", active: true },
+          { label: "Receivables", href: "/dashboard/order-system/receivables" },
+        ]}
+        search={{
+          value: query,
+          onChange: setQuery,
+          placeholder: "Search orders, PO, customer…",
+        }}
+      />
 
       <main className="os-main">
         <motion.div

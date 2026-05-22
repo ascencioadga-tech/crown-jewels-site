@@ -2357,3 +2357,26 @@
   font-style: italic;
   color: #7a1f2b;
 }
+
+/* ===== Uniform ambient canvas (matches Order System) ===== */
+.tf-dash {
+  background-image:
+    radial-gradient(ellipse 55% 38% at 82% -2%, rgba(184, 133, 62, 0.10), transparent 60%),
+    radial-gradient(ellipse 45% 35% at -5% 102%, rgba(122, 31, 43, 0.06), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* ===== White sheets + warm header bands (matches Order System) ===== */
+.tf-dash .card {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(14, 20, 17, 0.04),
+    0 16px 34px -26px rgba(14, 20, 17, 0.3);
+}
+.tf-dash .card-head {
+  background: rgba(246, 241, 231, 0.5);
+}
+.tf-dash .commodity-card {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(14, 20, 17, 0.04),
+    0 12px 28px -24px rgba(14, 20, 17, 0.26);
+}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Topbar from "./Topbar";
 import { CURRENT_USER, firstName } from "./user";
 import "./dashboard-home.css";
 
@@ -51,40 +52,9 @@ const APPS: App[] = [
 ];
 
 export default function DashboardHome() {
-  const dateText = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
   return (
     <div className="cj-home">
-      <header className="home-topbar">
-        <div className="home-topbar-inner">
-          <Link href="/dashboard" className="home-brand">
-            <span className="home-brand-logo">
-              <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
-            </span>
-            <span className="home-brand-mark">
-              Crown <em>Jewels</em>
-            </span>
-          </Link>
-
-          <div className="home-topbar-date">
-            <span className="dot" />
-            <span>{dateText}</span>
-          </div>
-
-          <div className="home-user">
-            <div className="home-avatar">{CURRENT_USER.initials}</div>
-            <div className="home-user-name">{CURRENT_USER.name}</div>
-            <Link href="/" className="home-logout">
-              Sign out
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Topbar />
 
       <main className="home-main">
         <motion.div

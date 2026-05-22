@@ -321,3 +321,11 @@
 .cj-home .app-card.is-active:hover .app-cta {
   gap: 11px;
 }
+
+/* ===== Uniform ambient canvas (matches Order System) ===== */
+.cj-home {
+  background-image:
+    radial-gradient(ellipse 55% 38% at 82% -2%, rgba(184, 133, 62, 0.10), transparent 60%),
+    radial-gradient(ellipse 45% 35% at -5% 102%, rgba(122, 31, 43, 0.06), transparent 60%);
+  background-attachment: fixed;
+}
