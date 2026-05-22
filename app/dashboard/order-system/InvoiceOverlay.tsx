@@ -41,14 +41,13 @@ export default function InvoiceOverlay({
     });
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="os-inv-backdrop os-noprint"
-        onClick={onClose}
-      />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="os-inv-backdrop"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -57,6 +56,7 @@ export default function InvoiceOverlay({
         className="os-inv-modal"
         role="dialog"
         aria-label={`Invoice ${inv.number}`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Toolbar (not printed) */}
         <div className="os-inv-toolbar os-noprint">
@@ -212,6 +212,6 @@ export default function InvoiceOverlay({
           </div>
         </div>
       </motion.div>
-    </>
+    </motion.div>
   );
 }
