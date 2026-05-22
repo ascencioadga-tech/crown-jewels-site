@@ -1,6 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { termsToDays } from "./data";
+
+export type InvoiceStatus = "draft" | "sent" | "paid";
+
+export type Invoice = {
+  number: string; // INV-YYYY-####
+  date: string; // YYYY-MM-DD
+  dueDate: string; // YYYY-MM-DD
+  status: InvoiceStatus;
+  sentAt?: string; // ISO
+  sentTo?: string;
+  paidAt?: string; // ISO
+};
 
 export type OrderLine = {
   id: string;
@@ -44,11 +57,14 @@ export type Order = {
   notes?: string;
   createdAt: string; // ISO
   history: StatusEvent[];
+  invoice?: Invoice;
 };
 
 const ORDERS_KEY = "cj_orders_v1";
 const SEQ_KEY = "cj_order_seq_v1";
 const SEQ_START = 1001;
+const INV_SEQ_KEY = "cj_invoice_seq_v1";
+const INV_START = 5001;
 
 function read(): Order[] {
   try {
@@ -74,6 +90,17 @@ export function nextOrderNumber(): string {
   } catch {}
   const year = new Date().getFullYear();
   return `CJ-${year}-${seq}`;
+}
+
+/** Sequential invoice number, separate series from order numbers. */
+export function nextInvoiceNumber(): string {
+  let seq = INV_START;
+  try {
+    const raw = localStorage.getItem(INV_SEQ_KEY);
+    seq = raw ? parseInt(raw, 10) + 1 : INV_START;
+    localStorage.setItem(INV_SEQ_KEY, String(seq));
+  } catch {}
+  return `INV-${new Date().getFullYear()}-${seq}`;
 }
 
 export function orderTotal(o: Order): number {
@@ -193,5 +220,82 @@ export function useOrders() {
   const removeOrder = (id: string) =>
     persist(orders.filter((o) => o.id !== id));
 
-  return { orders, hydrated, addOrder, updateOrder, setStatus, removeOrder };
+  // Create the invoice for an order (idempotent — returns existing if present).
+  const generateInvoice = (id: string): Invoice | null => {
+    const o = orders.find((x) => x.id === id);
+    if (!o) return null;
+    if (o.invoice) return o.invoice;
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10);
+    const due = new Date(now);
+    due.setDate(due.getDate() + termsToDays(o.terms));
+    const invoice: Invoice = {
+      number: nextInvoiceNumber(),
+      date,
+      dueDate: due.toISOString().slice(0, 10),
+      status: "draft",
+    };
+    persist(
+      orders.map((x) =>
+        x.id === id
+          ? {
+              ...x,
+              invoice,
+              status: "invoiced",
+              history: [
+                ...x.history,
+                { status: "invoiced", at: now.toISOString(), by: x.salesperson },
+              ],
+            }
+          : x
+      )
+    );
+    return invoice;
+  };
+
+  const markInvoiceSent = (id: string, to: string) =>
+    persist(
+      orders.map((o) =>
+        o.id === id && o.invoice
+          ? {
+              ...o,
+              invoice: {
+                ...o.invoice,
+                status: "sent",
+                sentAt: new Date().toISOString(),
+                sentTo: to,
+              },
+            }
+          : o
+      )
+    );
+
+  const markPaid = (id: string, by = "Alejandro") =>
+    persist(
+      orders.map((o) =>
+        o.id === id && o.invoice
+          ? {
+              ...o,
+              status: "paid",
+              invoice: { ...o.invoice, status: "paid", paidAt: new Date().toISOString() },
+              history: [
+                ...o.history,
+                { status: "paid", at: new Date().toISOString(), by },
+              ],
+            }
+          : o
+      )
+    );
+
+  return {
+    orders,
+    hydrated,
+    addOrder,
+    updateOrder,
+    setStatus,
+    removeOrder,
+    generateInvoice,
+    markInvoiceSent,
+    markPaid,
+  };
 }

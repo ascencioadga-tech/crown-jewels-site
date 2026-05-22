@@ -10,6 +10,7 @@ import {
   type Order,
   type OrderStatus,
 } from "./useOrders";
+import InvoiceOverlay from "./InvoiceOverlay";
 import "./order-system.css";
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
@@ -32,11 +33,19 @@ const STATUS_FLOW: OrderStatus[] = [
 type Tab = "orders" | "report";
 
 export default function OrderSystemPage() {
-  const { orders, hydrated, setStatus } = useOrders();
+  const { orders, hydrated, setStatus, generateInvoice, markInvoiceSent, markPaid } =
+    useOrders();
   const [tab, setTab] = useState<Tab>("orders");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const openInvoice = (id: string) => {
+    const o = orders.find((x) => x.id === id);
+    if (o && !o.invoice) generateInvoice(id);
+    setInvoiceId(id);
+  };
 
   const dateText = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -58,6 +67,7 @@ export default function OrderSystemPage() {
   }, [orders, query]);
 
   const selected = orders.find((o) => o.id === openId) || null;
+  const invoiceOrder = orders.find((o) => o.id === invoiceId) || null;
 
   // Rob's report = one row per product line
   const reportRows = useMemo(() => {
@@ -283,6 +293,20 @@ export default function OrderSystemPage() {
             order={selected}
             onClose={() => setOpenId(null)}
             onAdvance={(s) => setStatus(selected.id, s)}
+            onInvoice={() => openInvoice(selected.id)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Invoice overlay */}
+      <AnimatePresence>
+        {invoiceOrder && invoiceOrder.invoice && (
+          <InvoiceOverlay
+            key={invoiceOrder.id}
+            order={invoiceOrder}
+            onClose={() => setInvoiceId(null)}
+            onSend={(to) => markInvoiceSent(invoiceOrder.id, to)}
+            onMarkPaid={() => markPaid(invoiceOrder.id)}
           />
         )}
       </AnimatePresence>
@@ -349,10 +373,12 @@ function OrderDrawer({
   order,
   onClose,
   onAdvance,
+  onInvoice,
 }: {
   order: Order;
   onClose: () => void;
   onAdvance: (s: OrderStatus) => void;
+  onInvoice: () => void;
 }) {
   const total = orderTotal(order);
   const idx = STATUS_FLOW.indexOf(order.status);
@@ -469,14 +495,17 @@ function OrderDrawer({
         </div>
 
         <footer className="os-drawer-foot">
-          <button className="os-btn ghost" disabled title="Invoicing — next milestone">
-            Generate invoice
-          </button>
           {next && (
-            <button className="os-btn primary" onClick={() => onAdvance(next)}>
+            <button className="os-btn ghost" onClick={() => onAdvance(next)}>
               Mark {STATUS_LABEL[next]}
             </button>
           )}
+          <button className="os-btn primary" onClick={onInvoice}>
+            {order.invoice ? "View invoice" : "Generate invoice"}
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
         </footer>
       </motion.aside>
     </>
