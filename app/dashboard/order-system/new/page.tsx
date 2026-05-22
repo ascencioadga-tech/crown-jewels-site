@@ -4,14 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  CUSTOMERS,
-  SALESPEOPLE,
-  TERMS_OPTIONS,
-  commodities,
-  customerById,
-  money,
-} from "../data";
+import { SALESPEOPLE, TERMS_OPTIONS, commodities, money } from "../data";
 import {
   nextOrderNumber,
   useOrders,
@@ -43,7 +36,7 @@ export default function NewOrderPage() {
   const router = useRouter();
   const { addOrder } = useOrders();
 
-  const [customerId, setCustomerId] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [destination, setDestination] = useState("");
   const [customerPO, setCustomerPO] = useState("");
   const [orderDate, setOrderDate] = useState(today());
@@ -53,15 +46,6 @@ export default function NewOrderPage() {
   const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<DraftLine[]>([newLine()]);
   const [error, setError] = useState("");
-
-  const onCustomer = (id: string) => {
-    setCustomerId(id);
-    const c = customerById(id);
-    if (c) {
-      setDestination(c.destination);
-      setTerms(c.terms);
-    }
-  };
 
   const setLine = (id: string, patch: Partial<DraftLine>) =>
     setLines((cur) => cur.map((l) => (l.id === id ? { ...l, ...patch } : l)));
@@ -81,8 +65,7 @@ export default function NewOrderPage() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const c = customerById(customerId);
-    if (!c) return setError("Choose a customer.");
+    if (!customerName.trim()) return setError("Enter the customer.");
     if (!customerPO.trim()) return setError("Enter the customer P.O.");
     const validLines = lines.filter(
       (l) => l.commodityId && parseFloat(l.quantity) > 0
@@ -108,10 +91,12 @@ export default function NewOrderPage() {
     const order: Order = {
       id: `o${Date.now()}`,
       orderNumber: nextOrderNumber(),
-      customerId: c.id,
-      customerName: c.name,
-      channel: c.channel,
-      destination: destination.trim() || c.destination,
+      customerId:
+        customerName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-") ||
+        `cust-${Date.now()}`,
+      customerName: customerName.trim(),
+      channel: "",
+      destination: destination.trim(),
       customerPO: customerPO.trim(),
       orderDate,
       shipDate,
@@ -163,18 +148,13 @@ export default function NewOrderPage() {
             </div>
             <div className="os-field-grid">
               <Field label="Customer" required>
-                <select
-                  value={customerId}
-                  onChange={(e) => onCustomer(e.target.value)}
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Customer name"
                   required
-                >
-                  <option value="">Select customer…</option>
-                  {CUSTOMERS.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </Field>
               <Field label="Destination">
                 <input

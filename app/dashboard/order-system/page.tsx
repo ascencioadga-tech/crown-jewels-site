@@ -322,7 +322,7 @@ function OrdersTable({
                 <td className="mono">{o.orderNumber}</td>
                 <td>
                   <div className="os-cust">{o.customerName}</div>
-                  <div className="os-cust-ch">{o.channel}</div>
+                  {o.channel && <div className="os-cust-ch">{o.channel}</div>}
                 </td>
                 <td>{o.destination}</td>
                 <td>{o.shipDate}</td>
