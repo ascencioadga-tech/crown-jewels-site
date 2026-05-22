@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { money } from "./data";
+import { money, commodities } from "./data";
 import {
   useOrders,
   orderTotal,
@@ -13,6 +13,31 @@ import {
 import InvoiceOverlay from "./InvoiceOverlay";
 import { CURRENT_USER } from "../user";
 import "./order-system.css";
+
+const ACCENT_BY_ID: Record<string, string> = Object.fromEntries(
+  commodities.map((c) => [c.id, c.accent])
+);
+
+// Distinct commodity accent colors in an order (for the row "what's in it" dots)
+function orderDots(o: Order): string[] {
+  const seen: string[] = [];
+  for (const l of o.lines) {
+    const a = ACCENT_BY_ID[l.commodityId] || "#7a1f2b";
+    if (!seen.includes(a)) seen.push(a);
+  }
+  return seen;
+}
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const STATUS_CHIPS: ("all" | OrderStatus)[] = [
+  "all",
+  "open",
+  "confirmed",
+  "shipped",
+  "invoiced",
+  "paid",
+];
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   open: "Open",
@@ -38,6 +63,7 @@ export default function OrderSystemPage() {
     useOrders();
   const [tab, setTab] = useState<Tab>("orders");
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | OrderStatus>("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -57,15 +83,25 @@ export default function OrderSystemPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return orders;
-    return orders.filter(
-      (o) =>
+    return orders.filter((o) => {
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
         o.orderNumber.toLowerCase().includes(q) ||
         o.customerName.toLowerCase().includes(q) ||
         o.customerPO.toLowerCase().includes(q) ||
         o.destination.toLowerCase().includes(q)
-    );
-  }, [orders, query]);
+      );
+    });
+  }, [orders, query, statusFilter]);
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: orders.length };
+    orders.forEach((o) => {
+      counts[o.status] = (counts[o.status] || 0) + 1;
+    });
+    return counts;
+  }, [orders]);
 
   const selected = orders.find((o) => o.id === openId) || null;
   const invoiceOrder = orders.find((o) => o.id === invoiceId) || null;
@@ -212,11 +248,6 @@ export default function OrderSystemPage() {
             <h1>
               Orders<span className="accent">.</span>
             </h1>
-            <p className="os-sub">
-              One entry feeds the order number, Rob&apos;s hourly report, and
-              the invoice. {orders.length} order
-              {orders.length === 1 ? "" : "s"} on file.
-            </p>
           </div>
           <Link href="/dashboard/order-system/new" className="os-btn primary">
             + New order
@@ -224,27 +255,38 @@ export default function OrderSystemPage() {
         </motion.div>
 
         <div className="os-tabs">
-          <button
-            className={tab === "orders" ? "active" : ""}
-            onClick={() => setTab("orders")}
-          >
-            Orders
-          </button>
-          <button
-            className={tab === "report" ? "active" : ""}
-            onClick={() => setTab("report")}
-          >
-            Rob&apos;s Report
-          </button>
+          {(["orders", "report"] as Tab[]).map((t) => (
+            <button
+              key={t}
+              className={tab === t ? "active" : ""}
+              onClick={() => setTab(t)}
+            >
+              {t === "orders" ? "Orders" : "Rob's Report"}
+              {tab === t && (
+                <motion.span layoutId="os-tab-underline" className="os-tab-underline" />
+              )}
+            </button>
+          ))}
         </div>
 
         {!hydrated ? (
           <div className="os-empty">Loading…</div>
         ) : tab === "orders" ? (
-          <OrdersTable
-            orders={filtered}
-            onOpen={(id) => setOpenId(id)}
-          />
+          <>
+            <div className="os-status-chips">
+              {STATUS_CHIPS.map((s) => (
+                <button
+                  key={s}
+                  className={statusFilter === s ? "active" : ""}
+                  onClick={() => setStatusFilter(s)}
+                >
+                  {s === "all" ? "All" : STATUS_LABEL[s]}
+                  <span className="chip-count">{statusCounts[s] || 0}</span>
+                </button>
+              ))}
+            </div>
+            <OrdersTable orders={filtered} onOpen={(id) => setOpenId(id)} />
+          </>
         ) : (
           <div className="os-card os-report">
             <div className="os-card-head">
@@ -342,7 +384,7 @@ function OrdersTable({
   return (
     <div className="os-card">
       <div className="os-table-scroll">
-        <table className="os-orders-table">
+        <table className="os-orders-table enriched">
           <thead>
             <tr>
               <th>Order #</th>
@@ -350,28 +392,37 @@ function OrdersTable({
               <th>Destination</th>
               <th>Ship Date</th>
               <th>P.O.</th>
-              <th className="num">Lines</th>
+              <th>Products</th>
               <th className="num">Total</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((o) => (
-              <tr key={o.id} onClick={() => onOpen(o.id)} className="clickable">
+            {orders.map((o, i) => (
+              <motion.tr
+                key={o.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.4, ease: EASE }}
+                onClick={() => onOpen(o.id)}
+                className={`clickable status-row-${o.status}`}
+              >
                 <td className="mono">{o.orderNumber}</td>
                 <td>
                   <div className="os-cust">{o.customerName}</div>
                   {o.channel && <div className="os-cust-ch">{o.channel}</div>}
                 </td>
-                <td>{o.destination}</td>
+                <td>{o.destination || <span className="os-dim">—</span>}</td>
                 <td>{o.shipDate}</td>
                 <td>{o.customerPO}</td>
-                <td className="num">{o.lines.length}</td>
+                <td>
+                  <Dots accents={orderDots(o)} count={o.lines.length} />
+                </td>
                 <td className="num strong">{money(orderTotal(o))}</td>
                 <td>
                   <StatusPill status={o.status} />
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
@@ -380,8 +431,29 @@ function OrdersTable({
   );
 }
 
+function Dots({ accents, count }: { accents: string[]; count: number }) {
+  const show = accents.slice(0, 4);
+  return (
+    <span className="os-dots">
+      <span className="os-dots-row">
+        {show.map((a, i) => (
+          <span key={i} className="os-dot" style={{ background: a }} />
+        ))}
+      </span>
+      <span className="os-dots-count">
+        {count} line{count === 1 ? "" : "s"}
+      </span>
+    </span>
+  );
+}
+
 function StatusPill({ status }: { status: OrderStatus }) {
-  return <span className={`os-status ${status}`}>{STATUS_LABEL[status]}</span>;
+  return (
+    <span className={`os-status ${status}`}>
+      <span className="os-status-dot" />
+      {STATUS_LABEL[status]}
+    </span>
+  );
 }
 
 function OrderDrawer({

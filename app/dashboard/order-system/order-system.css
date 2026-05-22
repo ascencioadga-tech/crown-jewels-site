@@ -1254,3 +1254,184 @@
   border-top: 1px solid rgba(14, 20, 17, 0.08);
   background: #fbf7ee;
 }
+
+/* ===== Dynamic dashboard polish ===== */
+
+/* Ambient warmth across the page */
+.cj-os {
+  background-image:
+    radial-gradient(ellipse 55% 38% at 82% -2%, rgba(184, 133, 62, 0.10), transparent 60%),
+    radial-gradient(ellipse 45% 35% at -5% 102%, rgba(122, 31, 43, 0.06), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* KPI strip */
+.cj-os .os-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+@media (max-width: 820px) {
+  .cj-os .os-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+.cj-os .os-kpi-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.cj-os .os-kpi {
+  position: relative;
+  background: #fbf7ee;
+  border: 1px solid rgba(14, 20, 17, 0.08);
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.cj-os .os-kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(14, 20, 17, 0.12);
+}
+.cj-os .os-kpi.accent::before { background: #7a1f2b; }
+.cj-os .os-kpi.danger::before { background: #a0291f; }
+.cj-os .os-kpi-link:hover .os-kpi {
+  border-color: rgba(14, 20, 17, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -18px rgba(14, 20, 17, 0.3);
+}
+.cj-os .os-kpi-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cj-os .os-kpi-arrow {
+  color: #7a1f2b;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.cj-os .os-kpi-link:hover .os-kpi-arrow { opacity: 1; transform: translateX(0); }
+.cj-os .os-kpi-value {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.cj-os .os-kpi.accent .os-kpi-value { color: #7a1f2b; }
+.cj-os .os-kpi.danger .os-kpi-value { color: #a0291f; }
+
+/* Status filter chips */
+.cj-os .os-status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.cj-os .os-status-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 20, 17, 0.12);
+  background: #fbf7ee;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: rgba(14, 20, 17, 0.65);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cj-os .os-status-chips button:hover {
+  border-color: rgba(14, 20, 17, 0.3);
+  color: #0e1411;
+}
+.cj-os .os-status-chips button.active {
+  background: #0e1411;
+  color: #f6f1e7;
+  border-color: #0e1411;
+}
+.cj-os .os-status-chips .chip-count {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(14, 20, 17, 0.07);
+  color: rgba(14, 20, 17, 0.55);
+}
+.cj-os .os-status-chips button.active .chip-count {
+  background: rgba(246, 241, 231, 0.2);
+  color: #f6f1e7;
+}
+
+/* Animated tab underline */
+.cj-os .os-tabs button { position: relative; }
+.cj-os .os-tabs button.active { border-bottom-color: transparent; }
+.cj-os .os-tab-underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #7a1f2b;
+  border-radius: 2px;
+}
+
+/* Enriched order rows */
+.cj-os .os-orders-table.enriched tbody tr {
+  transition: background 0.15s;
+}
+.cj-os .os-orders-table.enriched tbody tr.clickable:hover {
+  background: rgba(184, 133, 62, 0.07);
+}
+.cj-os .os-orders-table.enriched tbody td:first-child { position: relative; }
+.cj-os .os-orders-table.enriched tbody tr td:first-child::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: rgba(14, 20, 17, 0.14);
+}
+.cj-os .os-orders-table.enriched tr.status-row-open td:first-child::before { background: rgba(14, 20, 17, 0.22); }
+.cj-os .os-orders-table.enriched tr.status-row-confirmed td:first-child::before { background: #b8853e; }
+.cj-os .os-orders-table.enriched tr.status-row-shipped td:first-child::before { background: #2a4a5e; }
+.cj-os .os-orders-table.enriched tr.status-row-invoiced td:first-child::before { background: #7a1f2b; }
+.cj-os .os-orders-table.enriched tr.status-row-paid td:first-child::before { background: #4f5e36; }
+.cj-os .os-orders-table.enriched tr.status-row-cancelled td:first-child::before { background: rgba(14, 20, 17, 0.15); }
+
+/* Commodity dots */
+.cj-os .os-dots { display: inline-flex; flex-direction: column; gap: 4px; }
+.cj-os .os-dots-row { display: flex; gap: 3px; }
+.cj-os .os-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+.cj-os .os-dots-count { font-size: 11px; color: rgba(14, 20, 17, 0.5); }
+.cj-os .os-dim { color: rgba(14, 20, 17, 0.35); }
+
+/* Status pill dot */
+.cj-os .os-status { gap: 6px; }
+.cj-os .os-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
+}
