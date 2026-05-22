@@ -1046,3 +1046,211 @@
     overflow: visible !important;
   }
 }
+
+/* ---------- Secondary nav ---------- */
+.cj-os .os-nav {
+  display: flex;
+  gap: 4px;
+}
+.cj-os .os-nav a {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgba(14, 20, 17, 0.6);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.cj-os .os-nav a:hover {
+  color: #0e1411;
+  background: rgba(14, 20, 17, 0.04);
+}
+.cj-os .os-nav a.active {
+  background: #7a1f2b;
+  color: #f6f1e7;
+}
+
+/* ---------- AR metrics ---------- */
+.cj-os .os-ar-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+@media (max-width: 720px) {
+  .cj-os .os-ar-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+.cj-os .os-metric {
+  background: #fbf7ee;
+  border: 1px solid rgba(14, 20, 17, 0.08);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.cj-os .os-metric.accent { border-color: rgba(122, 31, 43, 0.25); }
+.cj-os .os-metric.danger { border-color: rgba(160, 41, 31, 0.3); }
+.cj-os .os-metric-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cj-os .os-metric-value {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.cj-os .os-metric.accent .os-metric-value { color: #7a1f2b; }
+.cj-os .os-metric.danger .os-metric-value { color: #a0291f; }
+
+/* ---------- Aging ---------- */
+.cj-os .os-aging-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  padding: 20px;
+}
+@media (max-width: 720px) {
+  .cj-os .os-aging-grid { grid-template-columns: 1fr; gap: 12px; }
+}
+.cj-os .os-aging-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cj-os .os-aging-amt {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cj-os .os-aging-bar-track {
+  height: 6px;
+  background: rgba(14, 20, 17, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.cj-os .os-aging-bar {
+  height: 100%;
+  border-radius: 3px;
+  min-width: 2px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cj-os .os-aging-bar.bucket-current { background: #4f5e36; }
+.cj-os .os-aging-bar.bucket-1-30 { background: #b8853e; }
+.cj-os .os-aging-bar.bucket-31-60 { background: #c0341c; }
+.cj-os .os-aging-bar.bucket-61-90 { background: #a0291f; }
+.cj-os .os-aging-bar.bucket-90\+ { background: #7a1f2b; }
+.cj-os .os-aging-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  font-weight: 600;
+}
+
+/* Aging pills in the table */
+.cj-os .os-aging-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cj-os .os-aging-pill.bucket-current { background: rgba(79,94,54,0.16); color: #3a4525; }
+.cj-os .os-aging-pill.bucket-1-30 { background: rgba(184,133,62,0.18); color: #8a5f23; }
+.cj-os .os-aging-pill.bucket-31-60 { background: rgba(192,52,28,0.14); color: #c0341c; }
+.cj-os .os-aging-pill.bucket-61-90 { background: rgba(160,41,31,0.16); color: #a0291f; }
+.cj-os .os-aging-pill.bucket-90\+ { background: rgba(122,31,43,0.16); color: #7a1f2b; }
+
+.cj-os .os-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: rgba(14, 20, 17, 0.6);
+  cursor: pointer;
+}
+
+/* ---------- Payment modal ---------- */
+.cj-os .os-pay-modal {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: #f6f1e7;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(14, 20, 17, 0.4);
+}
+.cj-os .os-pay-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(14, 20, 17, 0.08);
+}
+.cj-os .os-pay-num {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #7a1f2b;
+}
+.cj-os .os-pay-cust {
+  font-size: 13px;
+  color: rgba(14, 20, 17, 0.6);
+  margin-top: 2px;
+}
+.cj-os .os-pay-summary {
+  display: flex;
+  gap: 24px;
+  padding: 16px 20px;
+  background: #fbf7ee;
+  border-bottom: 1px solid rgba(14, 20, 17, 0.06);
+}
+.cj-os .os-pay-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cj-os .os-pay-summary span {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  font-weight: 600;
+}
+.cj-os .os-pay-summary strong {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.cj-os .os-pay-summary .bal strong { color: #7a1f2b; }
+.cj-os .os-pay-form {
+  padding: 4px 20px 16px;
+  overflow-y: auto;
+}
+.cj-os .os-pay-grid {
+  grid-template-columns: 1fr 1fr;
+  padding: 16px 0;
+}
+.cj-os .os-pay-remaining {
+  font-size: 13px;
+  color: rgba(14, 20, 17, 0.7);
+  padding: 12px 14px;
+  background: rgba(184, 133, 62, 0.08);
+  border-radius: 8px;
+}
+.cj-os .os-pay-remaining strong { font-variant-numeric: tabular-nums; }
+.cj-os .os-pay-clear { color: #3a4525; font-weight: 600; }
+.cj-os .os-pay-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(14, 20, 17, 0.08);
+  background: #fbf7ee;
+}

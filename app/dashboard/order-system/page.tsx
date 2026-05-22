@@ -164,6 +164,12 @@ export default function OrderSystemPage() {
             </span>
             <span className="os-brand-tag">Order System</span>
           </Link>
+          <nav className="os-nav">
+            <Link href="/dashboard/order-system" className="active">
+              Orders
+            </Link>
+            <Link href="/dashboard/order-system/receivables">Receivables</Link>
+          </nav>
           <div className="os-topbar-date">
             <span className="dot" />
             <span>{dateText}</span>

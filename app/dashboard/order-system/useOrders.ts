@@ -3,7 +3,20 @@
 import { useEffect, useState } from "react";
 import { termsToDays } from "./data";
 
-export type InvoiceStatus = "draft" | "sent" | "paid";
+export type InvoiceStatus = "draft" | "sent" | "partial" | "paid";
+
+export type PaymentMethod = "check" | "ach" | "wire" | "card" | "cash";
+
+export type Payment = {
+  id: string;
+  date: string; // YYYY-MM-DD
+  amount: number; // cash applied to the invoice
+  method: PaymentMethod;
+  reference?: string; // check #, ACH trace, etc.
+  deduction?: number; // short-pay / chargeback written off
+  deductionReason?: string;
+  note?: string;
+};
 
 export type Invoice = {
   number: string; // INV-YYYY-####
@@ -13,6 +26,7 @@ export type Invoice = {
   sentAt?: string; // ISO
   sentTo?: string;
   paidAt?: string; // ISO
+  payments?: Payment[];
 };
 
 export type OrderLine = {
@@ -105,6 +119,43 @@ export function nextInvoiceNumber(): string {
 
 export function orderTotal(o: Order): number {
   return o.lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
+}
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+// ---- AR / aging helpers ----
+export function invoicePaid(o: Order): number {
+  return round2((o.invoice?.payments ?? []).reduce((s, p) => s + p.amount, 0));
+}
+export function invoiceDeducted(o: Order): number {
+  return round2(
+    (o.invoice?.payments ?? []).reduce((s, p) => s + (p.deduction || 0), 0)
+  );
+}
+export function invoiceBalance(o: Order): number {
+  if (!o.invoice) return 0;
+  return Math.max(0, round2(orderTotal(o) - invoicePaid(o) - invoiceDeducted(o)));
+}
+/** Whole days past the due date (negative = not yet due). */
+export function daysPastDue(o: Order): number {
+  if (!o.invoice) return 0;
+  const due = new Date(o.invoice.dueDate + "T00:00:00");
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.floor((now.getTime() - due.getTime()) / 86400000);
+}
+export type AgingBucket = "current" | "1-30" | "31-60" | "61-90" | "90+";
+export function agingBucket(o: Order): AgingBucket {
+  const d = daysPastDue(o);
+  if (d <= 0) return "current";
+  if (d <= 30) return "1-30";
+  if (d <= 60) return "31-60";
+  if (d <= 90) return "61-90";
+  return "90+";
+}
+/** Orders with an invoice and an open balance = the receivables ledger. */
+export function isReceivable(o: Order): boolean {
+  return !!o.invoice && invoiceBalance(o) > 0;
 }
 
 // ---- Real orders recorded from the 05/21/2026 blue sheets (Carlos) ----
@@ -270,6 +321,32 @@ export function useOrders() {
       )
     );
 
+  // Apply a payment (with optional deduction) to an invoice — cash application.
+  const recordPayment = (id: string, payment: Payment) =>
+    persist(
+      orders.map((o) => {
+        if (o.id !== id || !o.invoice) return o;
+        const payments = [...(o.invoice.payments ?? []), payment];
+        const paid = payments.reduce((s, p) => s + p.amount, 0);
+        const deducted = payments.reduce((s, p) => s + (p.deduction || 0), 0);
+        const fullyPaid = orderTotal(o) - paid - deducted <= 0.005;
+        const now = new Date().toISOString();
+        return {
+          ...o,
+          status: fullyPaid ? "paid" : o.status,
+          invoice: {
+            ...o.invoice,
+            payments,
+            status: fullyPaid ? "paid" : "partial",
+            paidAt: fullyPaid ? now : o.invoice.paidAt,
+          },
+          history: fullyPaid
+            ? [...o.history, { status: "paid", at: now, by: "Alejandro" }]
+            : o.history,
+        };
+      })
+    );
+
   const markPaid = (id: string, by = "Alejandro") =>
     persist(
       orders.map((o) =>
@@ -297,5 +374,6 @@ export function useOrders() {
     generateInvoice,
     markInvoiceSent,
     markPaid,
+    recordPayment,
   };
 }

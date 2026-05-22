@@ -61,8 +61,8 @@ export default function InvoiceOverlay({
         {/* Toolbar (not printed) */}
         <div className="os-inv-toolbar os-noprint">
           <div className="os-inv-toolbar-left">
-            <span className={`os-status ${inv.status === "paid" ? "paid" : inv.status === "sent" ? "shipped" : "open"}`}>
-              {inv.status === "paid" ? "Paid" : inv.status === "sent" ? "Sent" : "Draft"}
+            <span className={`os-status ${inv.status === "paid" ? "paid" : inv.status === "partial" ? "confirmed" : inv.status === "sent" ? "shipped" : "open"}`}>
+              {inv.status === "paid" ? "Paid" : inv.status === "partial" ? "Partial" : inv.status === "sent" ? "Sent" : "Draft"}
             </span>
             {inv.sentAt && (
               <span className="os-inv-sent-note">
