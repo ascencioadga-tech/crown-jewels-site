@@ -30,15 +30,6 @@ function orderDots(o: Order): string[] {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const STATUS_CHIPS: ("all" | OrderStatus)[] = [
-  "all",
-  "open",
-  "confirmed",
-  "shipped",
-  "invoiced",
-  "paid",
-];
-
 const STATUS_LABEL: Record<OrderStatus, string> = {
   open: "Open",
   confirmed: "Confirmed",
@@ -63,7 +54,6 @@ export default function OrderSystemPage() {
     useOrders();
   const [tab, setTab] = useState<Tab>("orders");
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | OrderStatus>("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -83,25 +73,15 @@ export default function OrderSystemPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return orders.filter((o) => {
-      if (statusFilter !== "all" && o.status !== statusFilter) return false;
-      if (!q) return true;
-      return (
+    if (!q) return orders;
+    return orders.filter(
+      (o) =>
         o.orderNumber.toLowerCase().includes(q) ||
         o.customerName.toLowerCase().includes(q) ||
         o.customerPO.toLowerCase().includes(q) ||
         o.destination.toLowerCase().includes(q)
-      );
-    });
-  }, [orders, query, statusFilter]);
-
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: orders.length };
-    orders.forEach((o) => {
-      counts[o.status] = (counts[o.status] || 0) + 1;
-    });
-    return counts;
-  }, [orders]);
+    );
+  }, [orders, query]);
 
   const selected = orders.find((o) => o.id === openId) || null;
   const invoiceOrder = orders.find((o) => o.id === invoiceId) || null;
@@ -272,21 +252,7 @@ export default function OrderSystemPage() {
         {!hydrated ? (
           <div className="os-empty">Loading…</div>
         ) : tab === "orders" ? (
-          <>
-            <div className="os-status-chips">
-              {STATUS_CHIPS.map((s) => (
-                <button
-                  key={s}
-                  className={statusFilter === s ? "active" : ""}
-                  onClick={() => setStatusFilter(s)}
-                >
-                  {s === "all" ? "All" : STATUS_LABEL[s]}
-                  <span className="chip-count">{statusCounts[s] || 0}</span>
-                </button>
-              ))}
-            </div>
-            <OrdersTable orders={filtered} onOpen={(id) => setOpenId(id)} />
-          </>
+          <OrdersTable orders={filtered} onOpen={(id) => setOpenId(id)} />
         ) : (
           <div className="os-card os-report">
             <div className="os-card-head">
