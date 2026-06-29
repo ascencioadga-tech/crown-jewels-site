@@ -1,0 +1,119 @@
+/* ============================================================
+   Crown Jewels — Accounting · Grower-lots pipeline view
+
+   New styles for the "Grower lots" tab only. Everything else
+   reuses order-system.css (.os-card, .os-orders-table, .os-tabs,
+   .os-metric, …). All rules are scoped under .cj-acct so they
+   never leak into the shared sales-desk surfaces.
+
+   Palette (locked): ink #0e1411, muted rgba(14,20,17,.55),
+   maroon #7a1f2b / deep #511319, functional green #4f5e36.
+   Headings/numbers → Fraunces; body → Geist. No tan/gold.
+   ============================================================ */
+
+/* ---------- Lot pipeline summary row ----------
+   A 5-up stat strip. Mirrors .os-ar-metrics but allows five cells. */
+.cj-acct .acct-lot-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+@media (max-width: 900px) {
+  .cj-acct .acct-lot-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Stat cell — same surface as .os-metric, with an accent left edge
+   so the pipeline stages read as a sequence. */
+.cj-acct .acct-stat {
+  background: #ffffff;
+  border: 1px solid rgba(14, 20, 17, 0.08);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.cj-acct .acct-stat-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cj-acct .acct-stat-value {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #0e1411;
+}
+/* Stage-tinted accents matching the pill colours. */
+.cj-acct .acct-stat.declared { border-color: rgba(122, 31, 43, 0.22); }
+.cj-acct .acct-stat.declared .acct-stat-value { color: #7a1f2b; }
+.cj-acct .acct-stat.received { border-color: rgba(79, 94, 54, 0.28); }
+.cj-acct .acct-stat.received .acct-stat-value { color: #4f5e36; }
+.cj-acct .acct-stat.settled { border-color: rgba(79, 94, 54, 0.4); }
+.cj-acct .acct-stat.settled .acct-stat-value { color: #3a4525; }
+
+/* ---------- Lot status pill ----------
+   Declared → Received → Settled. Maroon-tint for in-transit,
+   green-tint once on hand, solid-ish green once liquidated. */
+.cj-acct .acct-lot-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+.cj-acct .acct-lot-pill .acct-lot-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.cj-acct .acct-lot-pill.declared {
+  color: #7a1f2b;
+  background: rgba(122, 31, 43, 0.1);
+}
+.cj-acct .acct-lot-pill.received {
+  color: #4f5e36;
+  background: rgba(79, 94, 54, 0.12);
+}
+.cj-acct .acct-lot-pill.settled {
+  color: #ffffff;
+  background: #4f5e36;
+}
+
+/* ---------- Lot table niceties ---------- */
+.cj-acct .acct-lot-grower {
+  color: #0e1411;
+  font-weight: 500;
+}
+.cj-acct .acct-lot-region {
+  font-size: 12px;
+  color: rgba(14, 20, 17, 0.55);
+}
+.cj-acct .acct-lot-commodities {
+  color: rgba(14, 20, 17, 0.78);
+}
+/* Settled net reads as functional green; an unsettled lot shows a muted dash. */
+.cj-acct .acct-lot-net { color: #3a4525; font-weight: 600; }
+.cj-acct .acct-lot-net.pending { color: rgba(14, 20, 17, 0.4); font-weight: 400; }
+.cj-acct .acct-lot-sold {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  color: #7a1f2b;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cj-acct .acct-lot-sold small {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(14, 20, 17, 0.5);
+}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { termsToDays } from "./data";
+import { useCloudCollection } from "../../lib/cloudStore";
+import type { ShipmentDoc } from "../shipping/shipmentDoc";
 
 export type InvoiceStatus = "draft" | "sent" | "partial" | "paid";
 
@@ -72,27 +73,25 @@ export type Order = {
   createdAt: string; // ISO
   history: StatusEvent[];
   invoice?: Invoice;
+  /** The shipment document recorded when the order ships — captures the lot
+      allocation (which grower lot each line sold from) so the PASSING sales
+      sheet & Bill of Lading stay reproducible after inventory is decremented. */
+  shipmentDoc?: ShipmentDoc;
 };
 
-const ORDERS_KEY = "cj_orders_v1";
+const ORDERS_KEY = "cj_orders_v2_blank";
 const SEQ_KEY = "cj_order_seq_v1";
 const SEQ_START = 1001;
 const INV_SEQ_KEY = "cj_invoice_seq_v1";
 const INV_START = 5001;
 
-function read(): Order[] {
-  try {
-    const raw = localStorage.getItem(ORDERS_KEY);
-    if (raw) return JSON.parse(raw) as Order[];
-  } catch {}
-  return [];
-}
+// Storage moved to the shared cloud store (app/lib/cloudStore.ts): localStorage
+// in local mode, Supabase + realtime once configured.
 
-function write(orders: Order[]) {
-  try {
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-  } catch {}
-}
+// NOTE (cloud hardening): the two counters below are per-browser. In Cloud mode
+// they should call the server RPCs public.next_order_number() /
+// next_invoice_number() (in schema.sql) so two users can't mint the same
+// number. Kept local for now; wired when Auth/cloud lands.
 
 /** Sequential, collision-proof order number — replaces the blue sheet. */
 export function nextOrderNumber(): string {
@@ -158,9 +157,10 @@ export function isReceivable(o: Order): boolean {
   return !!o.invoice && invoiceBalance(o) > 0;
 }
 
-// ---- Real orders recorded from the 05/21/2026 blue sheets (Carlos) ----
+// ---- Real orders recorded from the 05/21/2026 blue sheets (Alejandro) ----
 // Order number = blue-sheet FILE#. Imported once per browser; deletable.
-const BLUESHEET_IMPORT_KEY = "cj_bluesheet_import_20260521";
+// v2: re-attributes the imported orders from Carlos → Alejandro (purges the v1 import).
+const BLUESHEET_IMPORT_KEY = "cj_bluesheet_import_20260521_v2";
 
 function blueLine(
   id: string,
@@ -193,71 +193,62 @@ function blueOrder(
     customerPO: po,
     orderDate: "2026-05-21",
     shipDate: "2026-05-21",
-    salesperson: "Carlos",
+    salesperson: "Alejandro",
     terms: "Net 21",
     status: "open",
     lines,
     notes,
     createdAt: at,
-    history: [{ status: "open", at, by: "Carlos" }],
+    history: [{ status: "open", at, by: "Alejandro" }],
   };
 }
 
-const BLUESHEET_ORDERS: Order[] = [
-  blueOrder("348300", "calixtro", "Calixtro Dist.", "Wholesale", "158751", [
-    blueLine("bs-348300-0", "cucumbers", "Cucumbers", "SS", 420, 26.95),
-    blueLine("bs-348300-1", "cucumbers", "Cucumbers", "36", 810, 12.95),
-  ]),
-  blueOrder("348301", "fresh-direct", "Fresh Direct", "Retail", "N44974", [
-    blueLine("bs-348301-0", "cucumbers", "Cucumbers", "LG", 42, 22.95),
-  ]),
-  blueOrder("348304", "calixtro", "Calixtro Dist.", "Wholesale", "158752", [
-    blueLine("bs-348304-0", "melons", "Honeydew", "6", 1540, 5.0),
-  ], "Grower: Agt #2"),
-  blueOrder("348315", "calixtro", "Calixtro Dist.", "Wholesale", "158762", [
-    blueLine("bs-348315-0", "cucumbers", "Cucumbers", "36", 1620, 12.95),
-  ], "Grower: Agt #2"),
-];
+const BLUESHEET_ORDERS: Order[] = [];
 
 export function useOrders() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    // Purge legacy demo/seed orders left from before the seed was removed.
-    let all = read().filter((o) => !o.id.startsWith("seed-"));
-
-    // One-time import of the recorded blue-sheet orders.
-    try {
-      if (!localStorage.getItem(BLUESHEET_IMPORT_KEY)) {
-        const have = new Set(all.map((o) => o.orderNumber));
-        const toAdd = BLUESHEET_ORDERS.filter((o) => !have.has(o.orderNumber));
-        all = [...toAdd, ...all];
-        localStorage.setItem(BLUESHEET_IMPORT_KEY, "1");
-      }
-    } catch {}
-
-    write(all);
-    setOrders(all);
-    setHydrated(true);
-  }, []);
-
-  const persist = (next: Order[]) => {
-    setOrders(next);
-    write(next);
-  };
+  // Storage is the shared cloud store; the domain logic below is unchanged.
+  const {
+    items: orders,
+    hydrated,
+    setAll: persist,
+  } = useCloudCollection<Order>({
+    table: "orders",
+    localKey: ORDERS_KEY,
+    hydrate: (loaded) => {
+      // Purge demo/seed orders: legacy "seed-" and the removed "ar-" demo.
+      let all = loaded.filter(
+        (o) => !o.id.startsWith("seed-") && !o.id.startsWith("ar-")
+      );
+      // One-time import of the recorded blue-sheet orders. On the v2 import we
+      // drop any prior blue-sheet rows first so they re-attribute to Alejandro.
+      try {
+        if (!localStorage.getItem(BLUESHEET_IMPORT_KEY)) {
+          all = all.filter((o) => !o.id.startsWith("bs-"));
+          all = [...BLUESHEET_ORDERS, ...all];
+          localStorage.setItem(BLUESHEET_IMPORT_KEY, "1");
+        }
+      } catch {}
+      return all;
+    },
+  });
 
   const addOrder = (o: Order) => persist([o, ...orders]);
 
   const updateOrder = (id: string, patch: Partial<Order>) =>
     persist(orders.map((o) => (o.id === id ? { ...o, ...patch } : o)));
 
-  const setStatus = (id: string, status: OrderStatus, by = "Alejandro") =>
+  const setStatus = (
+    id: string,
+    status: OrderStatus,
+    by = "Alejandro",
+    patch?: Partial<Order>
+  ) =>
     persist(
       orders.map((o) =>
         o.id === id
           ? {
               ...o,
+              ...patch,
               status,
               history: [
                 ...o.history,
@@ -268,8 +259,7 @@ export function useOrders() {
       )
     );
 
-  const removeOrder = (id: string) =>
-    persist(orders.filter((o) => o.id !== id));
+  // Orders are a permanent record — there is intentionally no delete path.
 
   // Create the invoice for an order (idempotent — returns existing if present).
   const generateInvoice = (id: string): Invoice | null => {
@@ -370,7 +360,6 @@ export function useOrders() {
     addOrder,
     updateOrder,
     setStatus,
-    removeOrder,
     generateInvoice,
     markInvoiceSent,
     markPaid,

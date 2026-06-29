@@ -1,0 +1,375 @@
+/* Crown Jewels — PASSING sales sheet (the transaction document).
+   White sheet over the grey canvas, maroon header, ink body, green accents.
+   Fraunces for the PASSING title / numbers, Geist for body & the lines table.
+   No tan/gold. @media print isolates the sheet — copied from ship-sheet.css. */
+
+.css-back {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 80px;
+  overflow-y: auto;
+  background: rgba(14, 20, 17, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.css-wrap {
+  width: 100%;
+  max-width: 860px;
+}
+
+/* ---- action bar (screen only) ---- */
+.css-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.css-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 9px;
+  padding: 10px 16px;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.css-btn.ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #fff;
+}
+.css-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.css-btn.primary {
+  background: #7a1f2b;
+  color: #fff;
+}
+.css-btn.primary:hover {
+  background: #911f2e;
+}
+
+/* ---- the sheet ---- */
+.css-sheet {
+  background: #fff;
+  color: #0e1411;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.5;
+  border-radius: 8px;
+  box-shadow: 0 30px 64px -28px rgba(0, 0, 0, 0.55);
+  padding: 34px 38px 30px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- header ---- */
+.css-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2.5px solid #511319;
+}
+.css-head-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.css-passing {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  margin: 0;
+  color: #7a1f2b;
+}
+.css-co {
+  display: flex;
+  flex-direction: column;
+}
+.css-co b {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #0e1411;
+}
+.css-co span {
+  font-size: 11px;
+  color: rgba(14, 20, 17, 0.55);
+}
+
+.css-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+.css-crest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  background: #511319;
+  color: #fff;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.css-totbox {
+  display: flex;
+  gap: 18px;
+}
+.css-totbox > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.css-totbox span {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(14, 20, 17, 0.5);
+}
+.css-totbox b {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #0e1411;
+}
+
+/* ---- parties ---- */
+.css-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+.css-party {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(14, 20, 17, 0.12);
+  border-radius: 6px;
+  padding: 10px 13px;
+}
+.css-party-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: #7a1f2b;
+  margin-bottom: 4px;
+}
+.css-party-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0e1411;
+}
+.css-party-line {
+  font-size: 12px;
+  color: rgba(14, 20, 17, 0.7);
+}
+
+/* ---- order meta ---- */
+.css-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 18px;
+  background: rgba(14, 20, 17, 0.1);
+  border: 1px solid rgba(14, 20, 17, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.css-meta-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  background: #fafafa;
+}
+.css-meta-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(14, 20, 17, 0.5);
+}
+.css-meta-value {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0e1411;
+}
+
+/* ---- lines table ---- */
+.css-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.css-table thead th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+  color: #fff;
+  background: #511319;
+  padding: 8px 10px;
+  text-align: right;
+  white-space: nowrap;
+}
+.css-table thead th.l {
+  text-align: left;
+}
+.css-table thead th.c {
+  text-align: center;
+}
+.css-table thead th.lot {
+  background: #7a1f2b;
+}
+.css-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(14, 20, 17, 0.1);
+  text-align: right;
+  vertical-align: top;
+}
+.css-table tbody td.l {
+  text-align: left;
+}
+.css-table tbody td.c {
+  text-align: center;
+}
+.css-table tbody tr:nth-child(even) td {
+  background: rgba(14, 20, 17, 0.022);
+}
+.css-table td.l:first-child {
+  font-weight: 600;
+}
+
+/* the lot — clearly visible */
+.css-lot {
+  display: inline-block;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: #511319;
+  background: rgba(122, 31, 43, 0.09);
+  border: 1px solid rgba(122, 31, 43, 0.22);
+  border-radius: 5px;
+  padding: 1px 8px;
+}
+
+.css-empty {
+  text-align: center !important;
+  padding: 22px !important;
+  color: rgba(14, 20, 17, 0.5);
+}
+
+.css-table tfoot .css-total td {
+  padding: 11px 10px;
+  border-top: 2px solid #511319;
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 13px;
+}
+.css-table tfoot .css-total td.l {
+  font-family: var(--font-fraunces), Georgia, serif;
+  letter-spacing: 0.04em;
+}
+.css-table tfoot .css-total td.n:last-child {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 15px;
+  color: #511319;
+}
+
+/* ---- lot note ---- */
+.css-lotnote {
+  margin-top: 14px;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: rgba(14, 20, 17, 0.6);
+  border-left: 3px solid #4f5e36;
+  padding-left: 10px;
+}
+.css-lotnote b {
+  color: #4f5e36;
+}
+
+/* ---- signatures ---- */
+.css-sign {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 28px;
+  margin-top: 34px;
+}
+.css-sign-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.css-sign-line {
+  height: 1.5px;
+  background: rgba(14, 20, 17, 0.4);
+  margin-top: 18px;
+}
+.css-sign-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(14, 20, 17, 0.5);
+}
+
+/* ---- footer ---- */
+.css-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 22px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(14, 20, 17, 0.12);
+  font-size: 10px;
+  color: rgba(14, 20, 17, 0.5);
+}
+
+/* ===================== print: isolate the sheet ===================== */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .css-sheet,
+  .css-sheet * {
+    visibility: visible !important;
+  }
+  .css-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0 8px;
+  }
+  .css-back {
+    position: static;
+    background: none;
+    padding: 0;
+    backdrop-filter: none;
+    overflow: visible;
+  }
+  .css-actions {
+    display: none !important;
+  }
+}

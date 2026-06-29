@@ -32,11 +32,11 @@ export default function Nav() {
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 grid grid-cols-[1fr_auto_1fr] items-center">
         <Link
           href="/"
           aria-label="Crown Jewels Produce — home"
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-3 group justify-self-start"
         >
           {/* Full logo (with white wordmark) over the dark hero video */}
           <Image
@@ -69,19 +69,24 @@ export default function Nav() {
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-8 justify-self-center">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
               className={clsx(
-                "text-sm transition-colors",
+                "group relative py-1 text-[15px] font-medium tracking-wide transition-colors duration-300",
                 scrolled
-                  ? "text-ink-soft hover:text-brand"
-                  : "text-paper/85 hover:text-paper"
+                  ? "text-ink-soft hover:text-ink"
+                  : "text-paper hover:text-paper [text-shadow:0_1px_4px_rgba(8,12,10,0.6)]"
               )}
             >
               {l.label}
+              {/* Gold underline that grows in on hover */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -bottom-0.5 left-0 h-px w-0 bg-gold transition-all duration-300 ease-out group-hover:w-full"
+              />
             </a>
           ))}
         </nav>
@@ -89,14 +94,26 @@ export default function Nav() {
         <Link
           href="/admin"
           className={clsx(
-            "inline-flex items-center gap-2 rounded-full text-sm px-5 py-2 transition-colors",
+            "group relative inline-flex items-center justify-self-end overflow-hidden rounded-full border px-5 py-2 text-sm backdrop-blur-md transition-colors duration-300",
             scrolled
-              ? "bg-ink text-paper hover:bg-brand"
-              : "bg-paper text-ink hover:bg-brand hover:text-paper"
+              ? "border-ink/15 bg-ink/5 text-ink"
+              : "border-paper/40 bg-paper/10 text-paper"
           )}
         >
-          Login
-          <span aria-hidden>→</span>
+          {/* Crimson fill slides up on hover — bleeds in from the design */}
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-brand translate-y-[101%] transition-transform duration-300 ease-out group-hover:translate-y-0"
+          />
+          <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-300 group-hover:text-paper">
+            Login
+            <span
+              aria-hidden
+              className="transition-transform duration-300 ease-out group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </span>
         </Link>
       </div>
     </header>

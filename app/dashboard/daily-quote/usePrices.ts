@@ -1,51 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+// Daily-quote prices and client selection. Backed by the shared cloud store:
+// localStorage in local mode, a Supabase `app_kv` row (with realtime) once the
+// backend is configured. Same surface as before — { prices, setPrices, hydrated }.
 
-const KEY = "cj_dash_prices";
+import { useCloudDoc } from "../../lib/cloudStore";
 
 export function usePrices() {
-  const [prices, setPrices] = useState<Record<string, string>>({});
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setPrices(JSON.parse(raw));
-    } catch {}
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(KEY, JSON.stringify(prices));
-    } catch {}
-  }, [prices, hydrated]);
-
+  const { value: prices, setValue: setPrices, hydrated } = useCloudDoc<    Record<string, string>
+  >("prices_v2", {});
   return { prices, setPrices, hydrated };
 }
 
-const CLIENTS_KEY = "cj_dash_clients";
-
 export function useSelectedClients() {
-  const [selected, setSelected] = useState<string[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(CLIENTS_KEY);
-      if (raw) setSelected(JSON.parse(raw));
-    } catch {}
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(CLIENTS_KEY, JSON.stringify(selected));
-    } catch {}
-  }, [selected, hydrated]);
-
+  const { value: selected, setValue: setSelected, hydrated } = useCloudDoc<    string[]
+  >("selected_clients_v2", []);
   return { selected, setSelected, hydrated };
 }

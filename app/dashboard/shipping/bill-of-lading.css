@@ -1,0 +1,543 @@
+/* ============================================================
+   Crown Jewels — Straight Bill of Lading (printable freight doc).
+   A real-looking BOL form: white sheet, ink on white, maroon
+   title rule + wordmark, boxed/ruled sections, Fraunces for the
+   company name + section titles, Geist for the form fields/table.
+   MAROON is the only accent (no tan/gold). Pure CSS — no motion
+   library. Print isolates ONLY the .cj-bol sheet.
+   ============================================================ */
+
+.cj-bol-back {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(46, 10, 15, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 26px 18px 56px;
+  animation: cjbol-fade 0.2s ease both;
+}
+@keyframes cjbol-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.cj-bol-wrap {
+  width: 100%;
+  max-width: 820px;
+}
+
+/* ---------------- top action bar ---------------- */
+.cj-bol-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.cj-bol-btn {
+  height: 42px;
+  min-width: 128px;
+  padding: 0 20px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  font: 700 13.5px var(--font-geist-sans), system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.16s;
+}
+.cj-bol-btn.primary {
+  background: linear-gradient(135deg, #a8404e, #7a1f2b);
+  color: #fff;
+  box-shadow: 0 12px 24px -14px rgba(122, 31, 43, 0.7);
+}
+.cj-bol-btn.primary:hover {
+  transform: translateY(-1px);
+}
+.cj-bol-btn.ghost {
+  background: #fff;
+  color: #0e1411;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.cj-bol-btn.ghost:hover {
+  border-color: #7a1f2b;
+  color: #7a1f2b;
+}
+
+/* ============================================================
+   The sheet
+   ============================================================ */
+.cj-bol {
+  --ink: #0e1411;
+  --mut: rgba(14, 20, 17, 0.6);
+  --mar: #7a1f2b;
+  --mar-deep: #511319;
+  --line: #c9ccd1;
+  --line2: #e3e5e8;
+  --serif: var(--font-fraunces), Georgia, serif;
+  --sans: var(--font-geist-sans), system-ui, sans-serif;
+
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 12px;
+  box-shadow: 0 40px 90px -40px rgba(20, 12, 8, 0.55);
+  padding: 30px 34px 24px;
+}
+
+/* ---------------- title bar ---------------- */
+.cj-bol-titlebar {
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mar-deep);
+  padding-bottom: 8px;
+  border-bottom: 2.5px solid var(--mar-deep);
+}
+.cj-bol-titlebar .neg {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--mar);
+  margin-top: 3px;
+}
+
+/* ---------------- masthead ---------------- */
+.cj-bol-masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+.cj-bol-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.cj-bol-crest {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(150deg, #a8404e, #511319);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 18px;
+  flex: none;
+}
+.cj-bol-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--mar-deep);
+  line-height: 1.05;
+}
+.cj-bol-name small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mut);
+  margin-top: 3px;
+}
+.cj-bol-addr {
+  text-align: right;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.cj-bol-addr b {
+  font-weight: 600;
+}
+.cj-bol-addr .ph {
+  color: var(--mut);
+}
+
+/* ---------------- section primitives ---------------- */
+.cj-bol-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.cj-bol-grid2 > .cj-bol-cell + .cj-bol-cell {
+  border-left: 1px solid var(--line);
+}
+
+.cj-bol-row {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+.cj-bol-row:last-child {
+  border-bottom: none;
+}
+
+/* a labelled field cell */
+.cj-bol-cell {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 11px 8px;
+}
+.cj-bol-cell + .cj-bol-cell {
+  border-left: 1px solid var(--line);
+}
+.cj-bol-lab {
+  display: block;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mut);
+  margin-bottom: 2px;
+}
+.cj-bol-val {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  word-break: break-word;
+}
+.cj-bol-val.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.cj-bol-val.lot {
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--mar);
+  letter-spacing: 0.01em;
+}
+
+/* a framed block of rows */
+.cj-bol-block {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+/* party (consignee / ship-to) block */
+.cj-bol-party {
+  padding: 9px 12px 11px;
+}
+.cj-bol-party + .cj-bol-party {
+  border-left: 1px solid var(--line);
+}
+.cj-bol-party .cj-bol-lab {
+  color: var(--mar);
+}
+.cj-bol-party b {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 2px;
+  color: var(--ink);
+}
+.cj-bol-party p {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--mut);
+  margin-top: 2px;
+  white-space: pre-line;
+}
+
+/* ---------------- articles table ---------------- */
+.cj-bol-tabwrap {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.cj-bol-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.cj-bol-table th {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--mar-deep);
+  text-align: left;
+  padding: 7px 11px;
+}
+.cj-bol-table td {
+  font-size: 12px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--line2);
+  color: var(--ink);
+  vertical-align: top;
+}
+.cj-bol-table tbody tr:last-child td {
+  border-bottom: 1px solid var(--line);
+}
+.cj-bol-table .c {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cj-bol-table .r {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cj-bol-table th.c,
+.cj-bol-table th.r {
+  text-align: inherit;
+}
+.cj-bol-table th.r {
+  text-align: right;
+}
+.cj-bol-table th.c {
+  text-align: center;
+}
+.cj-bol-desc b {
+  font-weight: 600;
+  display: block;
+}
+.cj-bol-desc small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--mut);
+  margin-top: 1px;
+}
+.cj-bol-desc small .lotcode {
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--mar);
+}
+.cj-bol-table tfoot td {
+  font-weight: 700;
+  font-size: 12.5px;
+  background: #f6f7f9;
+  border-top: 1.5px solid var(--mar-deep);
+  border-bottom: none;
+  color: var(--mar-deep);
+  padding: 9px 11px;
+  font-variant-numeric: tabular-nums;
+}
+.cj-bol-table tfoot td.lab {
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 9.5px;
+  color: var(--mut);
+}
+
+.cj-bol-empty {
+  text-align: center;
+  color: var(--mut);
+  font-size: 12px;
+  padding: 18px 0;
+}
+
+/* ---------------- instruction blocks ---------------- */
+.cj-bol-sectitle {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mar-deep);
+  letter-spacing: 0.01em;
+  margin-bottom: 6px;
+}
+.cj-bol-instr {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.cj-bol-instr .panel {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px 11px;
+}
+.cj-bol-temp {
+  display: flex;
+  gap: 22px;
+  margin-top: 4px;
+}
+.cj-bol-temp div {
+  flex: 1;
+}
+.cj-bol-temp .cj-bol-lab {
+  color: var(--mar);
+}
+.cj-bol-temp .t {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.cj-bol-callout {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mar-deep);
+  line-height: 1.4;
+}
+.cj-bol-instr .panel p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--mut);
+  margin-top: 5px;
+}
+
+/* freight terms + legal */
+.cj-bol-freight {
+  margin-top: 14px;
+  border: 1.5px solid var(--mar-deep);
+  border-radius: 4px;
+  padding: 10px 13px;
+  background: rgba(122, 31, 43, 0.035);
+}
+.cj-bol-freight .big {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--mar-deep);
+}
+.cj-bol-freight p {
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--mut);
+  margin-top: 6px;
+}
+
+.cj-bol-legal {
+  margin-top: 12px;
+  font-size: 9.5px;
+  line-height: 1.6;
+  color: var(--mut);
+  text-align: justify;
+}
+
+/* ---------------- signatures ---------------- */
+.cj-bol-sigs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 26px;
+}
+.cj-bol-sig {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+}
+.cj-bol-sig-line {
+  flex: 1;
+}
+.cj-bol-sig-line .rule {
+  display: block;
+  height: 1px;
+  background: rgba(14, 20, 17, 0.55);
+  margin-bottom: 4px;
+}
+.cj-bol-sig-line small {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+.cj-bol-sig-date {
+  width: 96px;
+  flex: none;
+}
+
+/* ---------------- footer ---------------- */
+.cj-bol-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+.cj-bol-foot .copies span + span::before {
+  content: " · ";
+  color: var(--line);
+}
+.cj-bol-foot .copies .w {
+  color: var(--ink);
+}
+.cj-bol-foot .copies .y {
+  color: var(--mar);
+}
+.cj-bol-foot .pg {
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .cj-bol {
+    padding: 22px 18px 18px;
+  }
+  .cj-bol-masthead,
+  .cj-bol-instr,
+  .cj-bol-sigs {
+    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+  .cj-bol-addr {
+    text-align: left;
+  }
+}
+
+/* ============================================================
+   PRINT — isolate ONLY the BOL sheet (pattern copied from
+   ship-sheet.css's @media print block).
+   ============================================================ */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .cj-bol,
+  .cj-bol * {
+    visibility: visible !important;
+  }
+  .cj-bol {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  .cj-bol-back {
+    position: static;
+    background: none;
+    padding: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .cj-bol-actions {
+    display: none !important;
+  }
+}

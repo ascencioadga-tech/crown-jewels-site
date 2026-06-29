@@ -1,0 +1,95 @@
+/* Crown Jewels — split-screen login (form left · brand panel right). Scoped
+   under .cjlogin so it never collides with other styles. Maroon-forward. */
+.cjlogin {
+  --mr: #7a1f2b;
+  --mr-deep: #511319;
+  --mr-ink: #3b0d12;
+  --mr-soft: #7a1f2b;
+  --cream: #f6f1e7;
+  --line: #e3dac8;
+  --muted: #6f675c;
+  --serif: var(--font-display), Georgia, serif;
+  --sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--sans);
+  color: var(--mr-ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.cjlogin .split { display: grid; grid-template-columns: 1.05fr 0.95fr; min-height: 100vh; background: #ffffff; }
+
+/* ---------- LEFT: form ---------- */
+.cjlogin .form-side { display: flex; align-items: center; justify-content: center; padding: 48px 56px; position: relative; overflow: hidden; background: #ffffff; }
+.cjlogin .form-inner { width: 100%; max-width: 412px; position: relative; z-index: 1; animation: cjrise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes cjrise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+
+.cjlogin .form-logo { height: 62px; width: auto; margin-bottom: 32px; }
+
+.cjlogin .eyebrow { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--mr-soft); margin-bottom: 0.45rem; }
+.cjlogin .form-inner h1 { font-family: var(--serif); font-size: 2.7rem; font-weight: 600; letter-spacing: -0.02em; color: var(--mr-deep); line-height: 1.04; margin-bottom: 0.7rem; }
+.cjlogin .form-inner .sub { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; max-width: 37ch; }
+
+.cjlogin .error-msg { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: #fdecec; border: 1px solid #f3c9c9; border-radius: 12px; color: #b23b3b; font-size: 13px; margin-bottom: 18px; }
+.cjlogin .error-msg svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.cjlogin .field { margin-bottom: 18px; }
+.cjlogin .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.cjlogin .input-wrap { position: relative; }
+.cjlogin .input-wrap > svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #bdae9a; pointer-events: none; transition: color 0.2s; }
+.cjlogin .field input { width: 100%; padding: 15px 16px 15px 46px; background: #fff; border: 1.5px solid var(--line); border-radius: 14px; font-size: 14px; font-family: inherit; color: var(--mr-ink); transition: all 0.2s; }
+.cjlogin .field input::placeholder { color: #bdae9a; }
+.cjlogin .field input:hover { border-color: #d6cab4; }
+.cjlogin .field input:focus { outline: none; border-color: var(--mr); box-shadow: 0 0 0 4px rgba(122, 31, 43, 0.13); }
+.cjlogin .input-wrap:focus-within > svg { color: var(--mr); }
+.cjlogin .field.pw input { padding-right: 46px; }
+.cjlogin .toggle-pw { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #bdae9a; border-radius: 8px; transition: 0.2s; }
+.cjlogin .toggle-pw:hover { color: var(--mr); background: rgba(122, 31, 43, 0.06); }
+.cjlogin .toggle-pw svg { width: 18px; height: 18px; }
+
+.cjlogin .options { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 26px; }
+.cjlogin .remember { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
+.cjlogin .remember input { appearance: none; -webkit-appearance: none; width: 17px; height: 17px; border: 1.5px solid #cbbfa9; border-radius: 5px; cursor: pointer; position: relative; transition: 0.15s; flex-shrink: 0; }
+.cjlogin .remember input:checked { background: var(--mr); border-color: var(--mr); }
+.cjlogin .remember input:checked::after { content: ""; position: absolute; top: 2px; left: 5px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.cjlogin .forgot { font-size: 13px; color: var(--mr); text-decoration: none; font-weight: 600; transition: 0.2s; }
+.cjlogin .forgot:hover { color: var(--mr-soft); }
+
+.cjlogin .btn-login { width: 100%; padding: 16px; border: none; border-radius: 100px; background: var(--mr); color: #fff; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; transition: 0.22s; position: relative; overflow: hidden; box-shadow: 0 14px 30px rgba(122, 31, 43, 0.3); }
+.cjlogin .btn-login::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent); transition: left 0.6s; }
+.cjlogin .btn-login:hover::before { left: 100%; }
+.cjlogin .btn-login:hover { background: var(--mr-deep); transform: translateY(-2px); box-shadow: 0 18px 38px rgba(122, 31, 43, 0.42); }
+.cjlogin .btn-login:active { transform: translateY(0); }
+.cjlogin .btn-login:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.cjlogin .secure-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 20px; font-size: 11.5px; color: var(--muted); letter-spacing: 0.3px; }
+.cjlogin .secure-note svg { width: 14px; height: 14px; color: var(--mr-soft); flex-shrink: 0; }
+.cjlogin .foot { margin-top: 14px; text-align: center; font-size: 11.5px; color: #a99f90; }
+.cjlogin .foot a { color: var(--mr); text-decoration: none; font-weight: 500; }
+
+/* ---------- RIGHT: brand panel ---------- */
+.cjlogin .brand-panel { position: relative; align-self: stretch; justify-self: stretch; margin: 26px 26px 26px 8px; border-radius: 16px; overflow: hidden; background: var(--mr-deep); display: flex; flex-direction: column; justify-content: space-between; padding: 46px; color: #fff; text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.42); box-shadow: 0 34px 80px -40px rgba(20, 8, 10, 0.55); }
+.cjlogin .brand-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.cjlogin .brand-panel::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.2) 46%, rgba(0, 0, 0, 0.42) 100%); }
+.cjlogin .panel-c { position: relative; z-index: 3; }
+.cjlogin .panel-top { display: flex; align-items: center; justify-content: space-between; }
+.cjlogin .panel-logo { height: 46px; width: auto; filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.55)); }
+.cjlogin .panel-chip { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255, 255, 255, 0.92); background: rgba(20, 8, 10, 0.26); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.42); padding: 7px 13px; border-radius: 100px; }
+.cjlogin .panel-mid { position: relative; z-index: 3; max-width: 32ch; }
+.cjlogin .panel-eyebrow { font-family: var(--serif); font-style: italic; font-size: 1.18rem; color: #f0e6d6; margin-bottom: 0.85rem; }
+.cjlogin .panel-mid h2 { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 2.7rem; line-height: 1.12; letter-spacing: -0.01em; color: #fff; }
+.cjlogin .panel-mid p { margin-top: 1.05rem; color: rgba(255, 255, 255, 0.84); font-size: 1rem; font-weight: 300; line-height: 1.6; max-width: 36ch; }
+.cjlogin .panel-stats { position: relative; z-index: 3; display: flex; gap: 34px; align-items: center; }
+.cjlogin .panel-stats .n { font-family: var(--serif); font-size: 1.7rem; font-weight: 600; line-height: 1; }
+.cjlogin .panel-stats .l { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-top: 5px; }
+.cjlogin .panel-stats .divr { width: 1px; height: 38px; background: rgba(255, 255, 255, 0.2); }
+
+@media (max-width: 980px) {
+  .cjlogin .split { grid-template-columns: 1fr; }
+  .cjlogin .brand-panel { order: -1; align-self: stretch; justify-self: stretch; margin: 0; min-height: 240px; border-radius: 0; padding: 32px; }
+  .cjlogin .panel-mid h2 { font-size: 2.1rem; }
+  .cjlogin .form-side { padding: 40px 28px 56px; }
+}
+@media (max-width: 520px) {
+  .cjlogin .form-inner h1 { font-size: 2.1rem; }
+  .cjlogin .brand-panel { min-height: 210px; padding: 26px; }
+  .cjlogin .panel-stats { gap: 22px; }
+}

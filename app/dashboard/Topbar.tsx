@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { CURRENT_USER } from "./user";
 import "./shell.css";
 
 export type TopbarNav = { label: string; href: string; active?: boolean };
 
+/**
+ * Slim per-tool toolbar. The brand and user block moved into the workspace
+ * sidebar (Sidebar.tsx) — this keeps each tool's subnav, date, and search.
+ */
 export default function Topbar({
   tool,
   nav,
@@ -29,15 +32,7 @@ export default function Topbar({
   return (
     <header className="cjt-topbar">
       <div className="cjt-inner">
-        <Link href="/dashboard" className="cjt-brand">
-          <span className="cjt-logo">
-            <img src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
-          </span>
-          <span className="cjt-mark">
-            Crown <em>Jewels</em>
-          </span>
-          {tool && <span className="cjt-tag">{tool}</span>}
-        </Link>
+        {tool && <span className="cjt-tag">{tool}</span>}
 
         {nav && nav.length > 0 && (
           <nav className="cjt-nav">
@@ -69,19 +64,6 @@ export default function Topbar({
             />
           </div>
         )}
-
-        <div className="cjt-user">
-          <div className="cjt-avatar" title={CURRENT_USER.name}>
-            {CURRENT_USER.initials}
-          </div>
-          <div className="cjt-userblock">
-            <span className="cjt-username">{CURRENT_USER.name}</span>
-            <span className="cjt-userrole">{CURRENT_USER.role}</span>
-          </div>
-          <Link href="/" className="cjt-logout">
-            Sign out
-          </Link>
-        </div>
       </div>
     </header>
   );

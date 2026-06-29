@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { commodities, sizeKey, CommoditySize } from "./data";
 import { ProductConfig } from "./useProductConfig";
+import ProduceGlyph from "../ProduceGlyph";
 
 interface Props {
   open: boolean;
@@ -172,21 +173,7 @@ export default function ManageProducts({
                           }
                         }}
                       >
-                        {c.image ? (
-                          <div className="mc-img mc-img-photo">
-                            <img src={c.image} alt={c.name} />
-                          </div>
-                        ) : (
-                          <div
-                            className="mc-img"
-                            aria-label={c.name}
-                            style={{
-                              background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}99 100%)`,
-                            }}
-                          >
-                            <span className="cc-img-mono">{c.name.charAt(0)}</span>
-                          </div>
-                        )}
+                        <ProduceGlyph id={c.id} size={44} className="mc-glyph" />
                         <div className="mc-info">
                           <div className="mc-name">{c.name}</div>
                           <div className="mc-meta">

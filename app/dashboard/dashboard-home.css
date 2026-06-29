@@ -2,7 +2,7 @@
 
 .cj-home {
   min-height: 100vh;
-  background: #f6f1e7;
+  background: #f1f2f4;
   color: #0e1411;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
@@ -12,7 +12,7 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(251, 247, 238, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(14, 20, 17, 0.07);
@@ -93,7 +93,7 @@
   height: 32px;
   border-radius: 50%;
   background: #7a1f2b;
-  color: #f6f1e7;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,7 +138,7 @@
 .cj-home .flex-eyebrow .rule {
   width: 40px;
   height: 1px;
-  background: #b8853e;
+  background: #7a1f2b;
 }
 .cj-home .flex-eyebrow .eyebrow-text {
   font-size: 0.72rem;
@@ -167,17 +167,70 @@
   color: rgba(14, 20, 17, 0.6);
 }
 
-/* ---- App grid ---- */
+/* ---- Carousel bar: "Apps" label + prev/next controls ---- */
+.cj-home .carousel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.cj-home .carousel-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+}
+.cj-home .carousel-ctrl {
+  display: flex;
+  gap: 8px;
+}
+.cj-home .car-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 20, 17, 0.14);
+  background: #ffffff;
+  color: #0e1411;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.18s;
+}
+.cj-home .car-btn:hover:not(:disabled) {
+  border-color: #7a1f2b;
+  color: #7a1f2b;
+  background: #fff;
+}
+.cj-home .car-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ---- App carousel — bleeds off the right edge into the page ---- */
 .cj-home .home-app-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  display: flex;
+  gap: 22px;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* extend the right edge to the viewport so cards run off-screen
+     (50vw spans the full window, so credit back half the sidebar width) */
+  margin-right: calc(50% - 50vw + var(--cjsb-w, 0px) / 2);
+  padding: 14px 0 34px;
+  padding-right: 16vw;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* fade the right edge so the row appears to bleed into the site */
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 84%, transparent 99%);
+  mask-image: linear-gradient(to right, #000 0, #000 84%, transparent 99%);
 }
-@media (max-width: 900px) {
-  .cj-home .home-app-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 600px) {
-  .cj-home .home-app-grid { grid-template-columns: 1fr; }
+.cj-home .home-app-grid::-webkit-scrollbar { display: none; }
+.cj-home .home-app-grid > * {
+  flex: 0 0 clamp(280px, 30vw, 360px);
+  scroll-snap-align: start;
 }
 
 .cj-home .app-card {
@@ -185,7 +238,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fbf7ee;
+  background: #ffffff;
   border: 1px solid rgba(14, 20, 17, 0.08);
   border-radius: 6px;
   overflow: hidden;
@@ -204,14 +257,14 @@
   right: 0;
   height: 2px;
   z-index: 2;
-  background: linear-gradient(90deg, transparent, #b8853e 50%, transparent);
+  background: linear-gradient(90deg, transparent, #7a1f2b 50%, transparent);
   opacity: 0;
   transition: opacity 0.3s;
 }
 .cj-home .app-card.is-active:hover {
-  border-color: rgba(14, 20, 17, 0.3);
+  border-color: rgba(122, 31, 43, 0.5);
   transform: translateY(-4px);
-  box-shadow: 0 24px 60px -24px rgba(14, 20, 17, 0.28);
+  box-shadow: 0 24px 60px -24px rgba(58, 22, 10, 0.38);
 }
 .cj-home .app-card.is-active:hover::before {
   opacity: 1;
@@ -225,7 +278,7 @@
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background: #f0ead9;
+  background: #edeef1;
   border-bottom: 1px solid rgba(14, 20, 17, 0.07);
 }
 .cj-home .app-preview img {
@@ -251,6 +304,186 @@
   width: 40px;
   height: 40px;
   opacity: 0.55;
+}
+
+/* ---- Branded app poster (launcher thumbnail) — Crown Jewels masthead ---- */
+.cj-home .app-poster {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.cj-home .poster-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 65% 60% at 88% 8%, rgba(122, 31, 43, 0.14), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 4% 98%, rgba(122, 31, 43, 0.18), transparent 64%),
+    linear-gradient(150deg, #ffffff 0%, #f6f7f9 100%);
+}
+/* Faint crown watermark — brand texture */
+.cj-home .poster-watermark {
+  position: absolute;
+  right: -14px;
+  bottom: -22px;
+  width: 132px;
+  height: 80px;
+  overflow: hidden;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.cj-home .poster-watermark img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  height: 132px;
+  width: auto;
+  max-width: none;
+}
+
+/* Masthead: cropped crown logo + serif wordmark + gold app tag */
+.cj-home .poster-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 18px 0;
+}
+.cj-home .poster-masthead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.cj-home .poster-logo {
+  position: relative;
+  display: block;
+  width: 38px;
+  height: 23px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cj-home .poster-logo img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  height: 38px;
+  width: auto;
+  max-width: none;
+}
+.cj-home .poster-wordmark {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: #0e1411;
+  line-height: 1;
+}
+.cj-home .poster-wordmark em {
+  font-style: italic;
+  color: #7a1f2b;
+}
+.cj-home .poster-tag {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 7px;
+  border-radius: 999px;
+  background: rgba(122, 31, 43, 0.16);
+  color: #7a1f2b;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cj-home .poster-tag-icon {
+  display: inline-flex;
+}
+.cj-home .poster-tag-icon svg {
+  width: 11px;
+  height: 11px;
+}
+.cj-home .poster-gold-rule {
+  display: block;
+  margin-top: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #7a1f2b 0%, rgba(122, 31, 43, 0.12) 100%);
+}
+
+/* The "sliver of UI" mock peeking from the bottom edge */
+.cj-home .poster-mock {
+  position: absolute;
+  left: 20px;
+  right: -12px;
+  bottom: -14px;
+  padding: 13px 15px;
+  background: #fff;
+  border: 1px solid rgba(14, 20, 17, 0.07);
+  border-radius: 9px 12px 0 0;
+  box-shadow: 0 -12px 34px -20px rgba(14, 20, 17, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cj-home .app-card.is-active:hover .poster-mock {
+  transform: translateY(-5px);
+}
+.cj-home .poster-mock-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.cj-home .poster-mock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7a1f2b;
+}
+.cj-home .poster-mock-title {
+  height: 7px;
+  width: 104px;
+  border-radius: 3px;
+  background: rgba(14, 20, 17, 0.16);
+}
+.cj-home .poster-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.cj-home .poster-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+.cj-home .poster-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(14, 20, 17, 0.1);
+  flex: 1;
+}
+.cj-home .poster-bar.sm {
+  flex: 0 0 42%;
+}
+.cj-home .poster-pill {
+  height: 13px;
+  width: 44px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.cj-home .poster-pill.accent {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.cj-home .poster-pill.leaf {
+  background: rgba(79, 94, 54, 0.22);
+}
+.cj-home .poster-pill.red {
+  background: rgba(160, 41, 31, 0.2);
 }
 
 .cj-home .app-body {
@@ -325,7 +558,8 @@
 /* ===== Uniform ambient canvas (matches Order System) ===== */
 .cj-home {
   background-image:
-    radial-gradient(ellipse 55% 38% at 82% -2%, rgba(184, 133, 62, 0.10), transparent 60%),
-    radial-gradient(ellipse 45% 35% at -5% 102%, rgba(122, 31, 43, 0.06), transparent 60%);
+    radial-gradient(ellipse 60% 42% at 80% -4%, rgba(122, 31, 43, 0.16), transparent 62%),
+    radial-gradient(ellipse 50% 40% at -6% 104%, rgba(122, 31, 43, 0.10), transparent 62%),
+    radial-gradient(ellipse 130% 110% at 50% 38%, transparent 58%, rgba(58, 36, 16, 0.06) 100%);
   background-attachment: fixed;
 }

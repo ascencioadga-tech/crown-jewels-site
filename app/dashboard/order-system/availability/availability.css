@@ -1,0 +1,479 @@
+/* ============================================================
+   Crown Jewels — Availability board (Chucho-style UI).
+   KPI strip · icon commodity selector · board (icon header +
+   season badge + sub-KPIs + sizes table with status pills).
+   White surfaces, grey canvas, maroon accent, functional
+   green/red. Fraunces (numbers/titles) · Geist (UI). Scoped
+   under .cj-avail; reuses .cj-os chrome + the add-inventory modal.
+   ============================================================ */
+
+.cj-avail {
+  --mar: #7a1f2b;
+  --mar-deep: #511319;
+  --ink: #0e1411;
+  --mut: rgba(14, 20, 17, 0.58);
+  --mut2: rgba(14, 20, 17, 0.42);
+  --line: #e6e7ea;
+  --line2: #eceef1;
+  --tile: #f3f4f6;
+  --good: #4f5e36;
+  --danger: #a0291f;
+  --serif: var(--font-fraunces), Georgia, serif;
+  --sans: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* eyebrow above the H1 */
+.cj-avail .av-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mar);
+  margin-bottom: 8px;
+}
+.cj-avail .av-eyebrow-rule {
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--mar);
+}
+
+/* ---------------- KPI strip ---------------- */
+.cj-avail .av-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 22px 0 6px;
+}
+.cj-avail .av-kpi {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px 15px;
+  overflow: hidden;
+}
+.cj-avail .av-kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+}
+.cj-avail .av-kpi.accent::before {
+  background: var(--mar);
+}
+.cj-avail .av-kpi.good::before {
+  background: var(--good);
+}
+.cj-avail .av-kpi.danger::before {
+  background: var(--danger);
+}
+.cj-avail .av-kpi .lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--mut2);
+}
+.cj-avail .av-kpi .val {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+  margin-top: 8px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.cj-avail .av-kpi.accent .val {
+  color: var(--mar);
+}
+.cj-avail .av-kpi.good .val {
+  color: var(--good);
+}
+.cj-avail .av-kpi.danger .val {
+  color: var(--danger);
+}
+.cj-avail .av-kpi .cap {
+  font-size: 11.5px;
+  color: var(--mut);
+  margin-top: 8px;
+}
+
+/* ---------------- icon commodity selector (carousel) ---------------- */
+.cj-avail .av-commod-bar {
+  margin: 18px 0 6px;
+}
+.cj-avail .av-commod-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+.cj-avail .av-commod-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+.cj-avail .av-commod-ctrl {
+  display: flex;
+  gap: 6px;
+}
+.cj-avail .av-car-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.14s;
+}
+.cj-avail .av-car-btn:hover:not(:disabled) {
+  border-color: var(--mar);
+  color: var(--mar);
+}
+.cj-avail .av-car-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+.cj-avail .av-commod-track {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 6px;
+  margin: 0 -2px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-mask-image: linear-gradient(to right, #000 0, #000 93%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0, #000 93%, transparent 100%);
+}
+.cj-avail .av-commod-track::-webkit-scrollbar {
+  display: none;
+}
+.cj-avail .av-chip {
+  flex: 0 0 154px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 13px 11px;
+  cursor: pointer;
+  transition: 0.16s;
+  font-family: var(--sans);
+  text-align: left;
+}
+.cj-avail .av-chip:hover {
+  border-color: #cfd2d7;
+  background: #fcfcfd;
+}
+.cj-avail .av-chip.active {
+  border-color: var(--mar);
+  box-shadow: inset 0 0 0 1px var(--mar);
+}
+.cj-avail .av-chip-ic {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--tile);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-avail .av-chip.active .av-chip-ic {
+  background: rgba(122, 31, 43, 0.08);
+}
+.cj-avail .av-chip-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.12;
+}
+.cj-avail .av-chip-avail {
+  font-size: 11px;
+  color: var(--mut);
+}
+.cj-avail .av-chip-avail b {
+  color: var(--good);
+  font-weight: 700;
+}
+.cj-avail .av-chip-avail b.over {
+  color: var(--danger);
+}
+
+/* ---------------- board ---------------- */
+.cj-avail .av-board {
+  margin-top: 18px;
+}
+.cj-avail .av-board-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.cj-avail .av-board-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--tile);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-avail .av-board-title {
+  flex: 1;
+  min-width: 0;
+}
+.cj-avail .av-board-meta {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+.cj-avail .av-board-title h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.cj-avail .av-season {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--good);
+  background: rgba(79, 94, 54, 0.1);
+  border: 1px solid rgba(79, 94, 54, 0.2);
+  padding: 6px 12px;
+  border-radius: 999px;
+  flex: none;
+}
+.cj-avail .av-season .sd {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+/* sub-KPIs */
+.cj-avail .av-subkpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 14px 0 4px;
+}
+.cj-avail .av-sub {
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 11px;
+  padding: 13px 15px;
+}
+.cj-avail .av-sub .lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mut2);
+}
+.cj-avail .av-sub .val {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  margin-top: 6px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.cj-avail .av-sub.good .val {
+  color: var(--good);
+}
+
+/* sizes card */
+.cj-avail .av-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 14px;
+}
+.cj-avail .av-card-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 18px 12px;
+}
+.cj-avail .av-card-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--tile);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-avail .av-card-head h3 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.cj-avail .av-card-note {
+  margin-left: auto;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--mut);
+}
+
+/* sizes table */
+.cj-avail .av-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.cj-avail .av-table thead th {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mut2);
+  text-align: left;
+  padding: 9px 18px;
+  border-top: 1px solid var(--line2);
+  border-bottom: 1px solid var(--line2);
+  background: #f8f9fa;
+}
+.cj-avail .av-table th.r,
+.cj-avail .av-table td.r {
+  text-align: right;
+}
+.cj-avail .av-table tbody td {
+  padding: 11px 18px;
+  font-size: 13.5px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line2);
+  font-variant-numeric: tabular-nums;
+}
+.cj-avail .av-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.cj-avail .av-table tbody tr:hover {
+  background: #fcfcfd;
+}
+.cj-avail .av-table td.dim {
+  color: var(--mut);
+}
+.cj-avail .av-sz {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: var(--tile);
+  border-radius: 6px;
+  padding: 3px 9px;
+}
+.cj-avail .av-amt {
+  font-weight: 600;
+  color: var(--ink);
+}
+.cj-avail .av-amt.over {
+  color: var(--danger);
+}
+
+/* status pills */
+.cj-avail .av-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+}
+.cj-avail .av-pill .pd {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.cj-avail .av-pill.ok {
+  color: var(--good);
+  background: rgba(79, 94, 54, 0.12);
+}
+.cj-avail .av-pill.ok .pd {
+  background: var(--good);
+}
+.cj-avail .av-pill.low {
+  color: var(--mar);
+  background: rgba(122, 31, 43, 0.1);
+}
+.cj-avail .av-pill.low .pd {
+  background: var(--mar);
+}
+.cj-avail .av-pill.over {
+  color: var(--danger);
+  background: rgba(160, 41, 31, 0.1);
+}
+.cj-avail .av-pill.over .pd {
+  background: var(--danger);
+}
+.cj-avail .av-pill.none {
+  color: var(--mut2);
+  background: var(--tile);
+}
+.cj-avail .av-pill.none .pd {
+  background: var(--mut2);
+}
+
+/* modal entrance (replaces framer-motion) */
+.cj-avail .av-modal-back {
+  animation: av-fade 0.2s ease both;
+}
+.cj-avail .av-modal {
+  animation: av-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes av-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes av-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 900px) {
+  .cj-avail .av-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cj-avail .av-subkpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

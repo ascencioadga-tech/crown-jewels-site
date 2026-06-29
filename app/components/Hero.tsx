@@ -55,12 +55,19 @@ export default function Hero() {
       {/* Background video with subtle Ken Burns */}
       <video
         className="absolute inset-0 w-full h-full object-cover animate-kenburns"
-        src="/hero-background.mp4"
+        src="/hero-green-bell.mp4"
         autoPlay
         loop
         muted
         playsInline
         preload="metadata"
+        aria-hidden="true"
+      />
+
+      {/* White wash over the video */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "rgba(255,255,255,0.15)" }}
         aria-hidden="true"
       />
 
@@ -110,6 +117,16 @@ export default function Hero() {
                     clipped. The visible phrase fades + lifts in/out. */}
                 <span className="block mt-1 sm:mt-2 lg:mt-3">
                   <span className="relative inline-block align-baseline">
+                    {/* Soft lighter wash behind the cycling phrase for legibility */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute -inset-x-8 -inset-y-3 rounded-[2rem] pointer-events-none"
+                      style={{
+                        background:
+                          "radial-gradient(60% 75% at 35% 50%, rgba(246,241,231,0.30) 0%, rgba(246,241,231,0.12) 55%, rgba(246,241,231,0) 100%)",
+                        filter: "blur(10px)",
+                      }}
+                    />
                     <span
                       className="invisible italic whitespace-nowrap"
                       aria-hidden="true"
@@ -123,7 +140,7 @@ export default function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.5, ease: EASE }}
-                        className="absolute left-0 top-0 italic text-gold whitespace-nowrap"
+                        className="absolute left-0 top-0 italic text-brand whitespace-nowrap"
                         aria-hidden="true"
                       >
                         {ROTATING_PHRASES[phraseIndex]}

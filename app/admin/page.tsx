@@ -1,18 +1,15 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { motion } from "framer-motion";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import "./login.css";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
+  const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,7 +18,7 @@ export default function AdminLoginPage() {
     setError("");
     setSubmitting(true);
     // Placeholder auth — client-side credential check only.
-    // Swap this for real auth (Clerk / NextAuth / Supabase) before production.
+    // Swap for real auth (Supabase / NextAuth) before production.
     await new Promise((r) => setTimeout(r, 600));
     if (username.trim() === "Alejandro" && password === "Crownjewels") {
       router.push("/dashboard");
@@ -32,126 +29,34 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="login-root">
-      {/* Background video */}
-      <video
-        className="bg-video"
-        src="/hero-background.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-      />
-      <div className="bg-overlay" />
-      <div className="bg-vignette" />
+    <div className="cjlogin">
+      <div className="split">
+        {/* LEFT — form */}
+        <div className="form-side">
+          <div className="form-inner">
+            <img className="form-logo" src="/crown-jewels-logo-dark.png" alt="Crown Jewels Produce" />
 
-      {/* Floating blobs */}
-      <div className="blob blob-1" aria-hidden="true" />
-      <div className="blob blob-2" aria-hidden="true" />
-      <div className="blob blob-3" aria-hidden="true" />
-
-      <div className="login-grid">
-        {/* LEFT — Brand */}
-        <aside className="brand-side">
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="brand-top"
-          >
-            <Image
-              src="/crown-jewels-logo.png"
-              alt="Crown Jewels Produce"
-              width={580}
-              height={260}
-              priority
-              className="brand-logo"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.85, ease: EASE }}
-            className="brand-middle"
-          >
-            <span className="badge">
-              <span className="badge-dot" />
-              Internal Team Access
-            </span>
-            <h1>
-              Sign in to your{" "}
-              <span className="accent">team dashboard.</span>
-            </h1>
-            <p>
-              Manage availability, grower partners, and the daily program.
-              Crown Jewels staff only.
+            <p className="eyebrow">Team portal</p>
+            <h1>Welcome back.</h1>
+            <p className="sub">
+              Sign in to manage availability, orders, grower settlements, and the daily program — all in one place.
             </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45, duration: 1, ease: EASE }}
-            className="brand-bottom"
-          >
-            <Stat n="16" l="Commodities" />
-            <span className="stat-divider" />
-            <Stat n="9" l="Growing Regions" />
-            <span className="stat-divider" />
-            <Stat n="30+" l="Years Shipping" />
-          </motion.div>
-        </aside>
-
-        {/* RIGHT — Login card */}
-        <section className="login-side">
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.25, duration: 0.85, ease: EASE }}
-            className="login-card"
-          >
-            <Link href="/" className="back-link">
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-              </svg>
-              Back to site
-            </Link>
-
-            <div className="card-header">
-              <div className="icon-wrap">
-                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </div>
-              <h2>Sign in to continue</h2>
-              <p>Enter your team credentials to access the dashboard.</p>
-            </div>
 
             {error && (
-              <motion.div
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: [0, -4, 4, -3, 3, 0] }}
-                transition={{ duration: 0.45 }}
-                className="error-msg"
-                role="alert"
-              >
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <div className="error-msg" role="alert">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                 </svg>
                 <span>{error}</span>
-              </motion.div>
+              </div>
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
+              <div className="field">
                 <label htmlFor="username">Username</label>
                 <div className="input-wrap">
                   <input
                     id="username"
-                    name="username"
                     type="text"
                     placeholder="Enter your username"
                     required
@@ -159,70 +64,100 @@ export default function AdminLoginPage() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </div>
               </div>
 
-              <div className="form-group">
+              <div className="field pw">
                 <label htmlFor="password">Password</label>
                 <div className="input-wrap">
                   <input
                     id="password"
-                    name="password"
-                    type="password"
+                    type={showPw ? "text" : "password"}
                     placeholder="Enter your password"
                     required
                     autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                   </svg>
+                  <button
+                    type="button"
+                    className="toggle-pw"
+                    aria-label={showPw ? "Hide password" : "Show password"}
+                    onClick={() => setShowPw((s) => !s)}
+                  >
+                    {showPw ? (
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243L9.879 9.879" />
+                      </svg>
+                    ) : (
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </div>
 
-              <div className="form-options">
+              <div className="options">
                 <label className="remember">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                  />
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                   Remember me
                 </label>
-                <a href="#" className="forgot">
-                  Forgot password?
-                </a>
+                <a href="#" className="forgot">Forgot password?</a>
               </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="btn-login"
-              >
+              <button type="submit" disabled={submitting} className="btn-login">
                 {submitting ? "Signing in…" : "Sign In →"}
               </button>
             </form>
 
-            <div className="card-footer">
-              © {new Date().getFullYear()} Crown Jewels Produce ·{" "}
-              <a href="/">crownjewelsproduce.com</a>
+            <div className="secure-note">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+              256-bit SSL encrypted connection
             </div>
-          </motion.div>
-        </section>
-      </div>
-    </div>
-  );
-}
+            <div className="foot">© {new Date().getFullYear()} Crown Jewels Produce Company, LLC</div>
+          </div>
+        </div>
 
-function Stat({ n, l }: { n: string; l: string }) {
-  return (
-    <div className="stat-item">
-      <div className="num">{n}</div>
-      <div className="lbl">{l}</div>
+        {/* RIGHT — brand panel */}
+        <div className="brand-panel">
+          <video src="/login-hero.mp4" autoPlay muted loop playsInline poster="/login-hero.jpg" />
+
+          <div className="panel-c panel-top">
+            <img className="panel-logo" src="/crown-jewels-logo.png" alt="Crown Jewels Produce" />
+            <span className="panel-chip">Authorized Access</span>
+          </div>
+
+          <div className="panel-mid">
+            <p className="panel-eyebrow">Year-round, field to dock</p>
+            <h2>Built for the team that runs Crown Jewels.</h2>
+            <p>
+              The secure home for the desk that moves our produce from field to dock — every order, every grower, every season.
+            </p>
+          </div>
+
+          <div className="panel-c panel-stats">
+            <div>
+              <div className="n">16</div>
+              <div className="l">Commodities</div>
+            </div>
+            <div className="divr" />
+            <div>
+              <div className="n">30+</div>
+              <div className="l">Years shipping</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

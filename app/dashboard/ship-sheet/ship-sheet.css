@@ -1,0 +1,1765 @@
+/* ============================================================
+   Crown Jewels — Ship Sheet, the grower's PHONE APP.
+   Modeled 1:1 on Chucho's Ship Sheet device mockup, rethemed to
+   the locked system: white surfaces, grey canvas, MAROON accent
+   (deep #511319 chrome), functional green for received/settled.
+   Fraunces (headings + numbers) · Geist (body). Pure-CSS motion.
+   ============================================================ */
+
+.cj-ship {
+  --mar: #7a1f2b;
+  --mar-deep: #511319;
+  --mar-soft: #a8404e;
+  --ink: #0e1411;
+  --mut: rgba(14, 20, 17, 0.58);
+  --mut2: rgba(14, 20, 17, 0.4);
+  --canvas: #f1f2f4;
+  --tile: #f3f4f6;
+  --line: #e6e7ea;
+  --line2: #eceef1;
+  --good: #4f5e36;
+  --sans: var(--font-geist-sans), system-ui, sans-serif;
+  --serif: var(--font-fraunces), Georgia, serif;
+
+  min-height: 100vh;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+.cj-ship main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 22px 22px 56px;
+}
+
+/* ---------------- page head ---------------- */
+.cj-ship .ship-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.cj-ship .ship-head-copy {
+  max-width: 620px;
+}
+.cj-ship .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mar);
+}
+.cj-ship .eyebrow .rule {
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--mar);
+}
+.cj-ship .ship-head h1 {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.06;
+  margin-top: 9px;
+  color: var(--ink);
+}
+.cj-ship .ship-head h1 .accent {
+  color: var(--mar);
+  font-style: italic;
+}
+.cj-ship .ship-sub {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--mut);
+  margin-top: 8px;
+}
+
+/* grower switcher */
+.cj-ship .ship-switch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+.cj-ship .ship-switch-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+.cj-ship .ship-switch-chips {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+.cj-ship .ship-switch-chips button {
+  width: 38px;
+  height: 32px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mut);
+  cursor: pointer;
+  transition: 0.14s;
+}
+.cj-ship .ship-switch-chips button:hover {
+  background: var(--tile);
+  color: var(--ink);
+}
+.cj-ship .ship-switch-chips button.on {
+  background: var(--mar);
+  color: #fff;
+}
+
+/* ---------------- the phone ---------------- */
+.cj-ship .ship-stage {
+  display: flex;
+  justify-content: center;
+  padding: 18px 0 8px;
+}
+.cj-ship .ship-phone {
+  width: 392px;
+  max-width: 100%;
+  background: #0b0f0c;
+  border-radius: 48px;
+  padding: 11px;
+  box-shadow: 0 50px 100px -34px rgba(60, 12, 18, 0.5),
+    0 0 0 2px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+.cj-ship .ship-screen {
+  background: var(--canvas);
+  border-radius: 38px;
+  overflow: hidden;
+  position: relative;
+  height: 772px;
+  display: flex;
+  flex-direction: column;
+}
+.cj-ship .ship-island {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 104px;
+  height: 26px;
+  background: #000;
+  border-radius: 16px;
+  z-index: 30;
+}
+
+/* status bar */
+.cj-ship .ship-statusbar {
+  height: 44px;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 24px 5px 28px;
+  background: var(--mar-deep);
+  color: #fff;
+}
+.cj-ship .ship-statusbar .clock {
+  font-size: 13.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cj-ship .ship-statusbar .ic {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* app bar */
+.cj-ship .ship-appbar {
+  flex: none;
+  background: var(--mar-deep);
+  color: #fff;
+  padding: 4px 15px 15px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.cj-ship .ship-appbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -16px;
+  height: 16px;
+  background: linear-gradient(var(--mar-deep), rgba(81, 19, 25, 0));
+  pointer-events: none;
+  z-index: 2;
+}
+.cj-ship .ship-ab-av {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: linear-gradient(150deg, var(--mar-soft), var(--mar));
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.4);
+}
+.cj-ship .ship-ab-who {
+  min-width: 0;
+}
+.cj-ship .ship-ab-who b {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cj-ship .ship-ab-who span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.66);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.cj-ship .ship-ab-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.cj-ship .ship-lang {
+  display: flex;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  padding: 2px;
+}
+.cj-ship .ship-lang button {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  padding: 6px 9px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: 0.14s;
+}
+.cj-ship .ship-lang button.on {
+  background: #fff;
+  color: var(--mar-deep);
+}
+.cj-ship .ship-ab-bell {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+  position: relative;
+  cursor: pointer;
+}
+.cj-ship .ship-ab-bell .dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mar-soft);
+  border: 1.5px solid var(--mar-deep);
+}
+
+/* body */
+.cj-ship .ship-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 15px 18px;
+  position: relative;
+  z-index: 1;
+  animation: cjship-fade 0.32s ease both;
+}
+.cj-ship .ship-body::-webkit-scrollbar {
+  width: 0;
+}
+@keyframes cjship-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* hero */
+.cj-ship .ship-hero {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 28px -20px rgba(60, 12, 18, 0.28);
+  border: 1px solid var(--line2);
+  margin: 8px 0 16px;
+}
+.cj-ship .ship-hero h2 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.cj-ship .ship-hero-dt {
+  font-size: 12px;
+  color: var(--mut);
+  margin-top: 3px;
+  text-transform: capitalize;
+}
+.cj-ship .ship-hero-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.cj-ship .ship-hs {
+  background: var(--tile);
+  border-radius: 12px;
+  padding: 10px 11px;
+}
+.cj-ship .ship-hs .n {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--mar);
+  line-height: 1;
+}
+.cj-ship .ship-hs .l {
+  font-size: 9.5px;
+  color: var(--mut);
+  margin-top: 5px;
+  line-height: 1.25;
+}
+
+/* assist */
+.cj-ship .ship-assist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cj-ship .ship-assist button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 15px;
+  padding: 12px 13px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: left;
+}
+.cj-ship .ship-assist button:hover {
+  border-color: var(--mar);
+  box-shadow: 0 8px 18px -12px rgba(122, 31, 43, 0.5);
+}
+.cj-ship .ship-assist .ai {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(122, 31, 43, 0.1);
+  color: var(--mar);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-assist .tx {
+  line-height: 1.2;
+}
+.cj-ship .ship-assist .tx small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--mut2);
+  margin-top: 1px;
+}
+
+/* section header */
+.cj-ship .ship-sec {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 4px 10px;
+}
+.cj-ship .ship-sec .si {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: rgba(122, 31, 43, 0.1);
+  color: var(--mar);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-sec b {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cj-ship .ship-sec .ct {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mut);
+}
+
+/* product card */
+.cj-ship .ship-prod {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 10px 13px;
+  margin-bottom: 9px;
+  transition: 0.15s;
+}
+.cj-ship .ship-prod-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cj-ship .ship-prod.active {
+  border-color: rgba(122, 31, 43, 0.5);
+  box-shadow: 0 10px 22px -16px rgba(122, 31, 43, 0.5);
+}
+/* per-product lot the farmer enters (always shown; emphasized once active) */
+.cj-ship .ship-prod-lot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--line);
+  opacity: 0.72;
+  transition: opacity 0.15s;
+}
+.cj-ship .ship-prod-lot.on {
+  opacity: 1;
+}
+.cj-ship .ship-prod-lot-ic {
+  color: var(--mar);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-prod-lot-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mut2);
+  flex: none;
+}
+.cj-ship .ship-prod-lot input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--tile);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: 600 13px var(--sans);
+  color: var(--ink);
+}
+.cj-ship .ship-prod-lot input:focus {
+  outline: none;
+  border-color: var(--mar);
+  background: #fff;
+}
+.cj-ship .ship-prod-lot input::placeholder {
+  color: var(--mut2);
+  font-weight: 400;
+}
+.cj-ship .ship-pg {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-pn {
+  flex: 1;
+  min-width: 0;
+}
+.cj-ship .ship-pn b {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  line-height: 1.2;
+}
+.cj-ship .ship-pn > span {
+  font-size: 11.5px;
+  color: var(--mut);
+}
+.cj-ship .ship-pn .pal {
+  display: block;
+  font-size: 10.5px;
+  color: var(--mar);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.cj-ship .ship-stepper {
+  display: flex;
+  align-items: center;
+  background: var(--tile);
+  border-radius: 12px;
+  padding: 3px;
+  flex: none;
+}
+.cj-ship .ship-stepper button {
+  width: 32px;
+  height: 34px;
+  border: none;
+  background: #fff;
+  border-radius: 9px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--mar);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(60, 12, 18, 0.08);
+  transition: 0.1s;
+}
+.cj-ship .ship-stepper button:active {
+  transform: scale(0.92);
+}
+.cj-ship .ship-stepper button:disabled {
+  color: var(--mut2);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.cj-ship .ship-stepper input {
+  width: 50px;
+  height: 34px;
+  text-align: center;
+  border: none;
+  background: none;
+  font: 700 16px var(--sans);
+  color: var(--ink);
+  -moz-appearance: textfield;
+}
+.cj-ship .ship-stepper input::-webkit-outer-spin-button,
+.cj-ship .ship-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cj-ship .ship-stepper input:focus {
+  outline: none;
+}
+.cj-ship .ship-prod.active .ship-stepper input {
+  color: var(--mar);
+}
+
+/* truck card */
+.cj-ship .ship-tcard {
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 6px 14px;
+}
+.cj-ship .ship-trow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line2);
+}
+.cj-ship .ship-trow:last-child {
+  border-bottom: none;
+}
+.cj-ship .ship-trow .ti {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--tile);
+  color: var(--mut);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-trow .tl {
+  flex: 1;
+}
+.cj-ship .ship-trow label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--mut);
+  display: block;
+}
+.cj-ship .ship-trow input {
+  width: 100%;
+  border: none;
+  background: none;
+  font: 600 14.5px var(--sans);
+  color: var(--ink);
+  padding: 1px 0;
+}
+.cj-ship .ship-trow input:focus {
+  outline: none;
+}
+.cj-ship .ship-trow input::placeholder {
+  color: var(--mut2);
+  font-weight: 400;
+}
+
+/* action bar */
+.cj-ship .ship-actionbar {
+  flex: none;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line2);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cj-ship .ship-action-tot {
+  flex: none;
+}
+.cj-ship .ship-action-tot .n {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cj-ship .ship-action-tot .l {
+  font-size: 10px;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 3px;
+}
+.cj-ship .ship-send {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, var(--mar-soft), var(--mar));
+  color: #fff;
+  font: 700 15px var(--sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.16s;
+  box-shadow: 0 12px 24px -12px rgba(122, 31, 43, 0.7);
+}
+.cj-ship .ship-send:hover {
+  transform: translateY(-1px);
+}
+.cj-ship .ship-send:disabled {
+  background: #cbced2;
+  color: #fff;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* tab bar */
+.cj-ship .ship-tabbar {
+  flex: none;
+  background: #fff;
+  border-top: 1px solid var(--line2);
+  display: flex;
+  padding: 7px 8px 9px;
+}
+.cj-ship .ship-tab-b {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mut2);
+  cursor: pointer;
+  padding: 5px 0;
+  transition: 0.12s;
+}
+.cj-ship .ship-tab-b.on {
+  color: var(--mar);
+}
+
+/* track / progress stepper */
+.cj-ship .ship-track {
+  margin-top: 13px;
+}
+.cj-ship .ship-track-dots {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 15px;
+}
+.cj-ship .ship-track-line {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2.5px;
+  background: #e0e2e5;
+  border-radius: 2px;
+}
+.cj-ship .ship-track-fill {
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2.5px;
+  background: var(--mar);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.cj-ship .ship-nd {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e0e2e5;
+  border: 2px solid #e0e2e5;
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+.cj-ship .ship-nd.dn {
+  background: var(--mar);
+  border-color: var(--mar);
+}
+.cj-ship .ship-nd.cu {
+  background: #fff;
+  border-color: var(--mar);
+  box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.18);
+}
+.cj-ship .ship-track-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.cj-ship .ship-track-labels small {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--mut2);
+  flex: 1;
+  text-align: center;
+}
+.cj-ship .ship-track-labels small:first-child {
+  text-align: left;
+}
+.cj-ship .ship-track-labels small:last-child {
+  text-align: right;
+}
+.cj-ship .ship-track-labels small.on {
+  color: var(--mar);
+}
+
+/* empty state */
+.cj-ship .ship-empty {
+  text-align: center;
+  color: rgba(14, 20, 17, 0.45);
+  font-size: 13px;
+  padding: 28px 0;
+}
+
+/* history card */
+.cj-ship .ship-hcard {
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 14px 15px;
+  margin-bottom: 10px;
+}
+.cj-ship .ship-hc-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.cj-ship .ship-hc-lot {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mar);
+}
+.cj-ship .ship-hc-cs {
+  font-size: 12px;
+  color: var(--mut);
+}
+.cj-ship .ship-hc-st {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.cj-ship .ship-hc-st.s1 {
+  color: var(--mar);
+  background: rgba(122, 31, 43, 0.1);
+}
+.cj-ship .ship-hc-st.s2 {
+  color: var(--good);
+  background: rgba(79, 94, 54, 0.13);
+}
+.cj-ship .ship-hc-st.s3 {
+  color: var(--good);
+  background: rgba(79, 94, 54, 0.13);
+}
+.cj-ship .ship-hc-items {
+  font-size: 12px;
+  color: var(--mut);
+  margin-top: 7px;
+}
+
+/* profile */
+.cj-ship .ship-pcard {
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  padding: 20px 18px;
+  text-align: center;
+}
+.cj-ship .ship-pav {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(150deg, var(--mar-soft), var(--mar));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 auto 12px;
+}
+.cj-ship .ship-pcard h3 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.cj-ship .ship-pr {
+  font-size: 12.5px;
+  color: var(--mut);
+  margin-top: 2px;
+}
+.cj-ship .ship-pcert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--good);
+  background: rgba(79, 94, 54, 0.1);
+  border: 1px solid rgba(79, 94, 54, 0.2);
+  padding: 5px 11px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.cj-ship .ship-pstats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+.cj-ship .ship-pstats div {
+  background: var(--tile);
+  border-radius: 12px;
+  padding: 11px 6px;
+}
+.cj-ship .ship-pstats .n {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--mar);
+  display: block;
+  line-height: 1;
+}
+.cj-ship .ship-pstats .l {
+  font-size: 9px;
+  color: var(--mut);
+  display: block;
+  margin-top: 5px;
+}
+.cj-ship .ship-plist {
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.cj-ship .ship-pli {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cj-ship .ship-pli:last-child {
+  border-bottom: none;
+}
+.cj-ship .ship-pli-ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--tile);
+  color: var(--mut);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cj-ship .ship-pli-v {
+  margin-left: auto;
+  color: var(--mut);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* scanning overlay */
+.cj-ship .ship-scanning {
+  position: absolute;
+  inset: 0;
+  background: rgba(46, 10, 15, 0.62);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: 38px;
+  animation: cjship-fade 0.2s ease both;
+}
+.cj-ship .ship-scanbox {
+  background: #fff;
+  border-radius: 20px;
+  padding: 26px 28px;
+  text-align: center;
+  width: 244px;
+}
+.cj-ship .ship-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(122, 31, 43, 0.18);
+  border-top-color: var(--mar);
+  margin: 0 auto 15px;
+  animation: cjship-spin 0.8s linear infinite;
+}
+@keyframes cjship-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.cj-ship .ship-scanbox b {
+  font-size: 14.5px;
+  color: var(--ink);
+}
+.cj-ship .ship-scanbox span {
+  font-size: 12px;
+  color: var(--mut);
+  display: block;
+  margin-top: 4px;
+}
+
+/* done screen */
+.cj-ship .ship-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 20px 16px;
+}
+.cj-ship .ship-done-ck {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--mar-soft), var(--mar));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  box-shadow: 0 16px 34px -14px rgba(122, 31, 43, 0.7);
+  animation: cjship-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes cjship-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+.cj-ship .ship-done h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.cj-ship .ship-done h2 .accent {
+  color: var(--mar);
+  font-style: italic;
+}
+.cj-ship .ship-done p {
+  font-size: 13px;
+  color: var(--mut);
+  max-width: 32ch;
+  line-height: 1.55;
+  margin-top: 5px;
+}
+.cj-ship .ship-recap {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 14px 17px;
+  margin: 18px 0 6px;
+  text-align: left;
+}
+.cj-ship .ship-recap .rr {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 0;
+}
+.cj-ship .ship-recap .rr .k {
+  color: var(--mut);
+}
+.cj-ship .ship-recap .rr .v {
+  font-weight: 600;
+  color: var(--ink);
+}
+.cj-ship .ship-recap .rr .v.mono {
+  font-family: ui-monospace, Menlo, monospace;
+}
+.cj-ship .ship-done .ship-track {
+  width: 100%;
+  margin: 16px 0 4px;
+}
+.cj-ship .ship-done-again {
+  background: none;
+  border: none;
+  color: var(--mut);
+  font: 600 13px var(--sans);
+  cursor: pointer;
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cj-ship .ship-done-again:hover {
+  color: var(--mar);
+}
+
+/* caption */
+.cj-ship .ship-cap {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--mut);
+  max-width: 46ch;
+  margin: 12px auto 0;
+  line-height: 1.5;
+}
+
+/* toast */
+.cj-ship .ship-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mar-deep);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 12px;
+  box-shadow: 0 16px 34px -14px rgba(60, 12, 18, 0.6);
+  z-index: 60;
+  animation: cjship-toast 0.28s ease both;
+}
+@keyframes cjship-toast {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+}
+
+@media (max-width: 520px) {
+  .cj-ship main {
+    padding: 16px 10px 40px;
+  }
+  .cj-ship .ship-phone {
+    width: 100%;
+    border-radius: 38px;
+  }
+}
+
+/* ===================== QR on the success screen ===================== */
+.cj-ship .ship-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 2px;
+}
+.cj-ship .ship-qr-code {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px;
+  box-shadow: 0 10px 24px -16px rgba(60, 12, 18, 0.35);
+  line-height: 0;
+}
+.cj-ship .ship-qr-cap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--mut);
+}
+.cj-ship .ship-qr-cap .mono {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mar);
+  letter-spacing: 0.02em;
+}
+
+/* success-screen action buttons */
+.cj-ship .ship-done-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 18px;
+}
+.cj-ship .ship-done-btn {
+  flex: 1;
+  height: 46px;
+  border-radius: 13px;
+  border: 1px solid transparent;
+  font: 700 13.5px var(--sans);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-decoration: none;
+  transition: 0.16s;
+}
+.cj-ship .ship-done-btn.primary {
+  background: linear-gradient(135deg, var(--mar-soft), var(--mar));
+  color: #fff;
+  box-shadow: 0 12px 24px -14px rgba(122, 31, 43, 0.7);
+}
+.cj-ship .ship-done-btn.primary:hover {
+  transform: translateY(-1px);
+}
+.cj-ship .ship-done-btn.ghost {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.cj-ship .ship-done-btn.ghost:hover {
+  border-color: var(--mar);
+  color: var(--mar);
+}
+
+/* ===================== Shipping letter (printable BOL) ===================== */
+.cj-ship-letter-back {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(46, 10, 15, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 28px 18px 48px;
+  animation: cjship-fade 0.2s ease both;
+}
+.cj-ship-letter-wrap {
+  width: 100%;
+  max-width: 660px;
+}
+.cj-ship-letter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.cj-ship-letter-actions .ship-done-btn {
+  flex: 0 0 auto;
+  min-width: 120px;
+  height: 42px;
+  padding: 0 18px;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+.cj-ship-letter-actions .ship-done-btn.primary {
+  background: linear-gradient(135deg, #a8404e, #7a1f2b);
+  color: #fff;
+  border: none;
+}
+.cj-ship-letter-actions .ship-done-btn.ghost {
+  background: #fff;
+  color: #0e1411;
+  border: 1px solid #e6e7ea;
+}
+
+.cj-ship-letter {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 42px 44px 30px;
+  color: #0e1411;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  box-shadow: 0 40px 90px -40px rgba(20, 12, 8, 0.5);
+  overflow: hidden;
+}
+.cj-ship-letter .mono {
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+/* thin maroon top band + faint crown watermark */
+.cj-ship-letter .csl-topband {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #511319 0%, #7a1f2b 55%, #511319 100%);
+}
+.cj-ship-letter .csl-watermark {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  right: -70px;
+  bottom: -90px;
+  color: #7a1f2b;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+.cj-ship-letter > *:not(.csl-topband):not(.csl-watermark) {
+  position: relative;
+  z-index: 1;
+}
+
+.cj-ship-letter .csl-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #511319;
+}
+.cj-ship-letter .csl-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cj-ship-letter .csl-crest {
+  width: 50px;
+  height: 50px;
+  border-radius: 13px;
+  background: linear-gradient(150deg, #7a1f2b, #511319);
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 8px 18px -10px rgba(81, 19, 25, 0.7);
+}
+.cj-ship-letter .csl-crest-mark {
+  width: 30px;
+  height: 30px;
+  color: #fff;
+}
+.cj-ship-letter .csl-lockup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cj-ship-letter .csl-eyebrow {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7a1f2b;
+}
+.cj-ship-letter .csl-brand b {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 1.05;
+  display: block;
+  color: #511319;
+}
+.cj-ship-letter .csl-sub {
+  font-size: 11px;
+  color: rgba(14, 20, 17, 0.55);
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+.cj-ship-letter .csl-meta {
+  display: flex;
+  gap: 20px;
+  text-align: right;
+  padding-top: 2px;
+}
+.cj-ship-letter .csl-meta span {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.45);
+  margin-bottom: 2px;
+}
+.cj-ship-letter .csl-meta b {
+  font-size: 13px;
+  color: #0e1411;
+  letter-spacing: 0.01em;
+}
+
+.cj-ship-letter .csl-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin: 24px 0;
+}
+.cj-ship-letter .csl-party {
+  padding-left: 14px;
+  border-left: 2px solid #7a1f2b;
+}
+.cj-ship-letter .csl-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7a1f2b;
+}
+.cj-ship-letter .csl-party b {
+  display: block;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 15.5px;
+  font-weight: 600;
+  margin-top: 6px;
+  color: #0e1411;
+}
+.cj-ship-letter .csl-party p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(14, 20, 17, 0.62);
+  margin-top: 4px;
+}
+
+.cj-ship-letter .csl-details {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  background: #f6f7f9;
+  border: 1px solid #eceef1;
+  border-radius: 10px;
+  padding: 15px 18px;
+  margin-bottom: 20px;
+}
+.cj-ship-letter .csl-details > div {
+  position: relative;
+  padding-left: 13px;
+}
+.cj-ship-letter .csl-details > div::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  bottom: 1px;
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(122, 31, 43, 0.35);
+}
+.cj-ship-letter .csl-details span {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.45);
+  margin-bottom: 3px;
+}
+.cj-ship-letter .csl-details b {
+  font-size: 12.5px;
+  color: #0e1411;
+  font-variant-numeric: tabular-nums;
+}
+
+.cj-ship-letter .csl-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 22px;
+}
+.cj-ship-letter .csl-table th {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.5);
+  text-align: left;
+  padding: 0 10px 9px;
+  border-bottom: 1.5px solid #511319;
+}
+.cj-ship-letter .csl-table td {
+  font-size: 13px;
+  padding: 10px;
+  border-bottom: 1px solid #eceef1;
+  color: #0e1411;
+  font-variant-numeric: tabular-nums;
+}
+.cj-ship-letter .csl-table tbody tr:nth-child(even) td {
+  background: #f6f7f9;
+}
+.cj-ship-letter .csl-table td:first-child {
+  font-weight: 600;
+}
+.cj-ship-letter .csl-table .r {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cj-ship-letter .csl-table tfoot td {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(122, 31, 43, 0.06);
+  border-bottom: none;
+  border-top: 2px solid #511319;
+  color: #511319;
+  padding: 11px 10px;
+}
+
+.cj-ship-letter .csl-footrow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eceef1;
+}
+.cj-ship-letter .csl-qr {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 200px;
+}
+.cj-ship-letter .csl-qr canvas {
+  border: 1px solid #eceef1;
+  border-radius: 8px;
+  padding: 6px;
+  background: #fff;
+}
+.cj-ship-letter .csl-qr span {
+  font-size: 10px;
+  color: rgba(14, 20, 17, 0.55);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+.cj-ship-letter .csl-sign {
+  display: flex;
+  gap: 22px;
+  flex: 1;
+  justify-content: flex-end;
+}
+.cj-ship-letter .csl-sign-line {
+  width: 150px;
+}
+.cj-ship-letter .csl-rule {
+  display: block;
+  height: 1px;
+  background: rgba(14, 20, 17, 0.4);
+  margin-bottom: 5px;
+}
+.cj-ship-letter .csl-sign-line small {
+  font-size: 9.5px;
+  color: rgba(14, 20, 17, 0.5);
+}
+.cj-ship-letter .csl-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 13px;
+  border-top: 2px solid #511319;
+  font-size: 10.5px;
+  color: rgba(14, 20, 17, 0.5);
+  line-height: 1.5;
+}
+.cj-ship-letter .csl-foot-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+}
+.cj-ship-letter .csl-foot-mark svg {
+  width: 15px;
+  height: 15px;
+  color: #7a1f2b;
+}
+.cj-ship-letter .csl-foot-mark b {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #511319;
+}
+.cj-ship-letter .csl-foot-copy {
+  flex: 1;
+}
+.cj-ship-letter .csl-foot-ref {
+  flex: none;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(14, 20, 17, 0.45);
+}
+
+/* print: isolate the letter sheet */
+@media print {
+  @page {
+    size: auto;
+    margin: 14mm 13mm;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  .cj-ship-letter,
+  .cj-ship-letter * {
+    visibility: visible !important;
+  }
+  .cj-ship-letter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 26px 0 0;
+    overflow: visible;
+    /* keep maroon band, accents & watermark on paper */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cj-ship-letter * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cj-ship-letter .csl-topband {
+    height: 5px;
+  }
+  .cj-ship-letter .csl-watermark {
+    opacity: 0.05;
+  }
+  .cj-ship-letter-back {
+    position: static;
+    background: none;
+    padding: 0;
+    backdrop-filter: none;
+  }
+  .cj-ship-letter-actions {
+    display: none !important;
+  }
+}
+
+/* ===================== handwritten packing list (the "scan" reads this) ===================== */
+.cj-ship .ship-scanframe {
+  position: relative;
+  width: 290px;
+  max-width: 84%;
+}
+.cj-ship .ship-paper {
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      transparent,
+      transparent 25px,
+      rgba(20, 40, 80, 0.07) 25px,
+      rgba(20, 40, 80, 0.07) 26px
+    ),
+    #fbfaf4;
+  border-radius: 4px;
+  padding: 17px 18px 15px;
+  transform: rotate(-1.5deg);
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(0, 0, 0, 0.12);
+  font-family: var(--font-hand), "Comic Sans MS", cursive;
+  color: #1f3a63; /* blue-black ballpoint ink */
+}
+.cj-ship .ship-paper-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.cj-ship .ship-paper-title {
+  font-size: 21px;
+  font-weight: 700;
+}
+.cj-ship .ship-paper-date {
+  font-size: 15px;
+  color: #3a5a8a;
+}
+.cj-ship .ship-paper-grower {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 1px;
+  color: #4a2f63;
+}
+.cj-ship .ship-paper-rule {
+  display: block;
+  height: 2px;
+  background: #2a4a7a;
+  opacity: 0.5;
+  margin: 6px 0 8px;
+  border-radius: 2px;
+  transform: rotate(0.4deg);
+}
+.cj-ship .ship-paper-rule.thin {
+  height: 1.5px;
+  opacity: 0.3;
+  margin: 9px 0 6px;
+}
+.cj-ship .ship-paper-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 7px 0;
+  font-size: 18px;
+  line-height: 1.18;
+}
+.cj-ship .ship-paper-item {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+.cj-ship .ship-paper-lot {
+  font-size: 11.5px;
+  color: #3a5a8a;
+  opacity: 0.85;
+  margin-top: -1px;
+}
+.cj-ship .ship-paper-leader {
+  flex: 1;
+  align-self: flex-start;
+  margin-top: 12px;
+  border-bottom: 1.5px dotted rgba(42, 74, 122, 0.4);
+}
+.cj-ship .ship-paper-qty {
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: 20px;
+}
+.cj-ship .ship-paper-truck {
+  font-size: 14px;
+  color: #3a5a8a;
+  margin-top: 2px;
+}
+.cj-ship .ship-paper-sign {
+  font-size: 17px;
+  text-align: right;
+  margin-top: 7px;
+  transform: rotate(-2.5deg);
+}
+
+/* scanner viewfinder + sweeping beam over the paper */
+.cj-ship .ship-scanbeam {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 2%;
+  height: 26px;
+  background: linear-gradient(
+    180deg,
+    rgba(168, 64, 78, 0) 0%,
+    rgba(168, 64, 78, 0.45) 62%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  border-bottom: 2px solid #fff;
+  box-shadow: 0 0 18px 4px rgba(168, 64, 78, 0.5);
+  border-radius: 4px;
+  z-index: 2;
+  animation: cjship-scanbeam 1.5s ease-in-out infinite;
+}
+@keyframes cjship-scanbeam {
+  0% { top: 1%; }
+  50% { top: 84%; }
+  100% { top: 1%; }
+}
+.cj-ship .ship-scan-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid #fff;
+  z-index: 3;
+}
+.cj-ship .ship-scan-corner.tl { top: -9px; left: -9px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+.cj-ship .ship-scan-corner.tr { top: -9px; right: -9px; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+.cj-ship .ship-scan-corner.bl { bottom: -9px; left: -9px; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
+.cj-ship .ship-scan-corner.br { bottom: -9px; right: -9px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
+.cj-ship .ship-scan-reading {
+  position: absolute;
+  left: 50%;
+  bottom: -48px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cj-ship .ship-ring.sm {
+  width: 18px;
+  height: 18px;
+  border-width: 3px;
+  margin: 0;
+}

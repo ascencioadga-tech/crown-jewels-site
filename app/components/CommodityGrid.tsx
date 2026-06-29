@@ -200,42 +200,26 @@ function CommodityCard({
         href={`#commodity-${c.slug}`}
         className="block bg-paper border border-line/60 hover:border-ink/30 transition-colors duration-300"
       >
-        {/* Photo area */}
-        <div
-          className="relative aspect-square overflow-hidden"
-          data-placeholder={`commodity-${c.slug}`}
-          style={{
-            background: `linear-gradient(135deg, ${c.accent}33 0%, ${c.accent}88 100%)`,
-          }}
-        >
-          <div className="absolute inset-0 grain pointer-events-none" />
-          {/* In season pill */}
-          {isInSeason && (
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-paper/90 backdrop-blur-sm px-2.5 py-1">
-              <span className="block w-1.5 h-1.5 rounded-full bg-leaf animate-pulse" />
-              <span className="text-[10px] tracking-wider uppercase text-ink font-medium">
-                In season
-              </span>
-            </div>
-          )}
-          <span className="absolute top-3 right-3 text-[10px] tracking-wider uppercase text-paper/70">
-            {String(index + 1).padStart(2, "0")} / {COMMODITIES.length}
-          </span>
-          {/* Color accent dot bottom-left */}
-          <div
-            className="absolute bottom-3 left-3 w-3 h-3 rounded-full ring-2 ring-paper/40"
-            style={{ background: c.accent }}
-          />
-          {/* Soft hover overlay */}
-          <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/15 transition-colors duration-300" />
-        </div>
-
         {/* Card body */}
         <div className="p-5 lg:p-6">
-          <div className="flex items-baseline justify-between gap-3 mb-3">
-            <h3 className="font-display text-xl lg:text-[1.4rem] text-ink leading-tight">
-              {c.name}
-            </h3>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span
+                className="block w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: c.accent }}
+              />
+              <h3 className="font-display text-xl lg:text-[1.4rem] text-ink leading-tight truncate">
+                {c.name}
+              </h3>
+            </div>
+            {isInSeason && (
+              <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-leaf/10 px-2.5 py-1">
+                <span className="block w-1.5 h-1.5 rounded-full bg-leaf animate-pulse" />
+                <span className="text-[10px] tracking-wider uppercase text-leaf font-medium">
+                  In season
+                </span>
+              </span>
+            )}
           </div>
 
           {/* Region chips */}

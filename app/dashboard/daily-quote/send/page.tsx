@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { commodities, customers, sizeKey } from "../data";
 import { usePrices, useSelectedClients } from "../usePrices";
 import { useProductConfig } from "../useProductConfig";
-import Topbar from "../../Topbar";
+import ProduceGlyph from "../../ProduceGlyph";
 import { CURRENT_USER } from "../../user";
 import "../dashboard.css";
 
@@ -96,13 +96,6 @@ export default function SendQuotePage() {
 
   return (
     <div className="tf-dash tf-send">
-      <Topbar
-        tool="Daily Quote"
-        nav={[
-          { label: "Availability", href: "/dashboard/daily-quote" },
-          { label: "Send", href: "/dashboard/daily-quote/send", active: true },
-        ]}
-      />
 
       <main className="send-main">
         {/* LEFT: client picker sidebar */}
@@ -221,7 +214,7 @@ export default function SendQuotePage() {
                   </span>
                   <div>
                     <span className="qs-brand-mark">
-                      Crown <em>Jewels</em>
+                      Crown <em><span className="cj-j">Jewels</span></em>
                     </span>
                     <div className="qs-brand-meta">
                       <div>Year-round produce programs · Grower-direct</div>
@@ -256,19 +249,11 @@ export default function SendQuotePage() {
                       {items.map((l, i) => (
                         <div key={`${l.commodityId}-${i}`} className="qs-row qs-row-4">
                           <div className="qs-cell name">
-                            {l.image ? (
-                              <span className="qs-cell-photo" aria-hidden="true">
-                                <img src={l.image} alt="" />
-                              </span>
-                            ) : (
-                              <span
-                                className="qs-cell-swatch"
-                                aria-hidden="true"
-                                style={{
-                                  background: `linear-gradient(135deg, ${l.accent}33 0%, ${l.accent}99 100%)`,
-                                }}
-                              />
-                            )}
+                            <ProduceGlyph
+                              id={l.commodityId}
+                              size={36}
+                              className="qs-cell-glyph"
+                            />
                             <div>
                               <div className="qs-cell-name">{l.name}</div>
                               {l.heat && (
@@ -314,7 +299,7 @@ export default function SendQuotePage() {
                 <div className="qs-thanks">
                   <span>—</span>
                   <span className="qs-thanks-mark">
-                    Crown <em>Jewels</em> Sales
+                    Crown <em><span className="cj-j">Jewels</span></em> Sales
                   </span>
                 </div>
               </div>

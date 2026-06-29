@@ -45,9 +45,32 @@ body {
   color: var(--paper);
 }
 
+/* Smooth the Fraunces display forms (esp. the "J" in Crown Jewels): lift the
+   optical size off the chunky default, soften the terminals, and keep the
+   conventional (non-wonky) letterforms. Inherited, but only fonts that have
+   these axes (Fraunces) respond — Geist ignores them. Weight is untouched. */
+html {
+  font-variation-settings: "opsz" 60, "SOFT" 60, "WONK" 0;
+}
+
+/* The italic "Jewels" wordmark — rendered in Lora's warm, flowing italic so the
+   cursive J reads smooth. "Crown" stays upright Fraunces. Applied via a
+   <span class="cj-j">Jewels</span> wrapper. */
+.cj-j {
+  font-family: var(--font-jewelj), Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-variation-settings: normal;
+}
+
+/* "Joya" rendered as a branded wordmark — same Fraunces italic as "Jewels",
+   in brand crimson. Pair with .cj-j for the font. */
+.cj-joya {
+  color: var(--brand);
+}
+
 .font-display {
   font-family: var(--font-display), Georgia, serif;
-  font-optical-sizing: auto;
   letter-spacing: -0.02em;
 }
 
@@ -196,7 +219,7 @@ body {
   left: -240px;
   width: 620px;
   height: 620px;
-  background: #b8853e;
+  background: #511319;
   animation: blob-float-1 22s ease-in-out infinite;
 }
 .login-root .blob-2 {
@@ -297,7 +320,7 @@ body {
   color: #f6f1e7;
 }
 .brand-middle h1 .accent {
-  color: #d2a358;
+  color: var(--brand);
   font-style: italic;
   display: inline-block;
 }
@@ -318,7 +341,7 @@ body {
   font-family: var(--font-display), Georgia, serif;
   font-size: 36px;
   font-weight: 500;
-  color: #d2a358;
+  color: var(--brand);
   line-height: 1;
   letter-spacing: -0.03em;
 }
@@ -365,7 +388,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    #b8853e 50%,
+    #7a1f2b 50%,
     transparent 100%
   );
 }
@@ -402,10 +425,11 @@ body {
   width: 64px;
   height: 64px;
   margin-bottom: 22px;
-  background: linear-gradient(135deg, rgba(184, 133, 62, 0.22), rgba(184, 133, 62, 0.05));
-  border: 1px solid rgba(184, 133, 62, 0.35);
+  background: linear-gradient(135deg, #7a1f2b, #511319);
+  border: 1px solid rgba(224, 185, 107, 0.45);
   border-radius: 18px;
-  color: #d2a358;
+  color: #e7c275;
+  box-shadow: 0 10px 26px rgba(122, 31, 43, 0.35);
 }
 .card-header .icon-wrap::after {
   content: "";
@@ -487,12 +511,12 @@ body {
 }
 .form-group input:focus {
   outline: none;
-  border-color: #b8853e;
+  border-color: #7a1f2b;
   background: rgba(246, 241, 231, 0.08);
-  box-shadow: 0 0 0 4px rgba(184, 133, 62, 0.14);
+  box-shadow: 0 0 0 4px rgba(122, 31, 43, 0.22);
 }
 .input-wrap:focus-within svg {
-  color: #d2a358;
+  color: var(--brand);
 }
 
 .form-options {
@@ -524,8 +548,8 @@ body {
   transition: all 0.15s;
 }
 .remember input[type="checkbox"]:checked {
-  background: #b8853e;
-  border-color: #b8853e;
+  background: #7a1f2b;
+  border-color: #7a1f2b;
 }
 .remember input[type="checkbox"]:checked::after {
   content: "";
@@ -534,19 +558,19 @@ body {
   left: 5px;
   width: 4px;
   height: 8px;
-  border: solid #0e1411;
+  border: solid #f6f1e7;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 .forgot {
   font-size: 12px;
   font-weight: 500;
-  color: #d2a358;
+  color: var(--brand);
   text-decoration: none;
   transition: color 0.2s;
 }
 .forgot:hover {
-  color: #e7c275;
+  color: #d07a83;
 }
 
 .btn-login {
@@ -557,14 +581,14 @@ body {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: #0e1411;
-  background: linear-gradient(135deg, #d2a358, #b8853e);
+  color: #f6f1e7;
+  background: linear-gradient(135deg, #7a1f2b, #511319);
   border: none;
   border-radius: 12px;
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.25s;
-  box-shadow: 0 8px 24px rgba(184, 133, 62, 0.28);
+  box-shadow: 0 8px 24px rgba(122, 31, 43, 0.34);
 }
 .btn-login::before {
   content: "";
@@ -583,7 +607,7 @@ body {
 }
 .btn-login:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(184, 133, 62, 0.4);
+  box-shadow: 0 14px 34px rgba(122, 31, 43, 0.48);
 }
 .btn-login:hover:not(:disabled)::before {
   left: 100%;
@@ -600,11 +624,11 @@ body {
   color: rgba(246, 241, 231, 0.35);
 }
 .card-footer a {
-  color: #d2a358;
+  color: var(--brand);
   text-decoration: none;
 }
 .card-footer a:hover {
-  color: #e7c275;
+  color: #d07a83;
 }
 
 @media (max-width: 980px) {

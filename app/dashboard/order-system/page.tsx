@@ -7,16 +7,18 @@ import { money, commodities } from "./data";
 import {
   useOrders,
   orderTotal,
+  invoicePaid,
   type Order,
   type OrderStatus,
 } from "./useOrders";
-import InvoiceOverlay from "./InvoiceOverlay";
-import Topbar from "../Topbar";
+import { CURRENT_USER, SELLERS, canonicalSeller } from "../user";
 import "./order-system.css";
 
 const ACCENT_BY_ID: Record<string, string> = Object.fromEntries(
   commodities.map((c) => [c.id, c.accent])
 );
+const COMMODITY_BY_ID: Record<string, (typeof commodities)[number]> =
+  Object.fromEntries(commodities.map((c) => [c.id, c]));
 
 // Distinct commodity accent colors in an order (for the row "what's in it" dots)
 function orderDots(o: Order): string[] {
@@ -26,6 +28,15 @@ function orderDots(o: Order): string[] {
     if (!seen.includes(a)) seen.push(a);
   }
   return seen;
+}
+
+/** Whole-dollar money for KPIs / bars (no cents). */
+function money0(n: number): string {
+  return n.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
 }
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -39,147 +50,145 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
   cancelled: "Cancelled",
 };
 
-const STATUS_FLOW: OrderStatus[] = [
-  "open",
-  "confirmed",
-  "shipped",
-  "invoiced",
-  "paid",
-];
+// Salesmen advance an order up to "shipped". Invoicing & payment live in Accounting.
+const SALES_FLOW: OrderStatus[] = ["open", "confirmed", "shipped"];
 
-type Tab = "orders" | "report";
+const FOOT_NOTE: Partial<Record<OrderStatus, string>> = {
+  shipped: "Shipped — ready for Accounting to invoice.",
+  invoiced: "Invoiced — tracked in Accounting.",
+  paid: "Paid in full.",
+  cancelled: "Cancelled.",
+};
+
+const firstName = (full: string) => full.split(" ")[0];
+
+const MONTH_LABEL = new Date().toLocaleString("en-US", {
+  month: "long",
+  year: "numeric",
+});
+
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 export default function OrderSystemPage() {
-  const { orders, hydrated, setStatus, generateInvoice, markInvoiceSent, markPaid } =
-    useOrders();
-  const [tab, setTab] = useState<Tab>("orders");
+  const { orders, hydrated, setStatus } = useOrders();
   const [query, setQuery] = useState("");
+  const [repFilter, setRepFilter] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [invoiceId, setInvoiceId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
-  const openInvoice = (id: string) => {
-    const o = orders.find((x) => x.id === id);
-    if (o && !o.invoice) generateInvoice(id);
-    setInvoiceId(id);
-  };
+  // ---- KPIs (computed live from orders) ----
+  const kpis = useMemo(() => {
+    const live = orders.filter((o) => o.status !== "cancelled");
+    const booked = live.reduce((s, o) => s + orderTotal(o), 0);
+    const pipeline = orders
+      .filter((o) => o.status === "open" || o.status === "confirmed")
+      .reduce((s, o) => s + orderTotal(o), 0);
+    const pipelineCount = orders.filter(
+      (o) => o.status === "open" || o.status === "confirmed"
+    ).length;
+    const collected = orders.reduce((s, o) => s + invoicePaid(o), 0);
+    const avg = live.length ? booked / live.length : 0;
+    const cases = orders.reduce(
+      (s, o) => s + o.lines.reduce((u, l) => u + l.quantity, 0),
+      0
+    );
+    return {
+      booked,
+      pipeline,
+      pipelineCount,
+      collected,
+      avg,
+      cases,
+      count: live.length,
+    };
+  }, [orders]);
 
-  const filtered = useMemo(() => {
+  // ---- Sales by rep (leaderboard) ----
+  const reps = useMemo(() => {
+    const by: Record<string, { total: number; count: number }> = {};
+    // Seed every seller so the full team always shows, even before any orders.
+    SELLERS.forEach((s) => (by[s.name] = { total: 0, count: 0 }));
+    for (const o of orders) {
+      if (o.status === "cancelled") continue;
+      const r = canonicalSeller(o.salesperson);
+      by[r] = by[r] || { total: 0, count: 0 };
+      by[r].total += orderTotal(o);
+      by[r].count += 1;
+    }
+    return Object.entries(by)
+      .map(([name, d]) => ({ name, ...d }))
+      .sort((a, b) => b.total - a.total);
+  }, [orders]);
+  const maxRep = reps.length ? reps[0].total : 0;
+
+  // ---- By commodity ----
+  const byCommodity = useMemo(() => {
+    const by: Record<string, number> = {};
+    for (const o of orders) {
+      if (o.status === "cancelled") continue;
+      for (const l of o.lines) {
+        by[l.commodityId] = (by[l.commodityId] || 0) + l.quantity * l.unitPrice;
+      }
+    }
+    const rows = Object.entries(by)
+      .map(([id, total]) => {
+        const c = COMMODITY_BY_ID[id];
+        return {
+          id,
+          label: c?.group || c?.name || id,
+          accent: c?.accent || "#7a1f2b",
+          total,
+        };
+      })
+      .sort((a, b) => b.total - a.total);
+    return { rows, max: rows.length ? rows[0].total : 0 };
+  }, [orders]);
+
+  // ---- By channel ----
+  const byChannel = useMemo(() => {
+    const by: Record<string, number> = {};
+    for (const o of orders) {
+      if (o.status === "cancelled") continue;
+      const ch = o.channel || "—";
+      by[ch] = (by[ch] || 0) + orderTotal(o);
+    }
+    const rows = Object.entries(by)
+      .map(([label, total]) => ({ label, total }))
+      .sort((a, b) => b.total - a.total);
+    return { rows, max: rows.length ? rows[0].total : 0 };
+  }, [orders]);
+
+  // ---- Orders table (rep filter + search) ----
+  const tableOrders = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return orders;
-    return orders.filter(
-      (o) =>
+    return orders.filter((o) => {
+      if (
+        repFilter &&
+        canonicalSeller(o.salesperson) !== repFilter
+      )
+        return false;
+      if (!q) return true;
+      return (
         o.orderNumber.toLowerCase().includes(q) ||
         o.customerName.toLowerCase().includes(q) ||
         o.customerPO.toLowerCase().includes(q) ||
-        o.destination.toLowerCase().includes(q)
-    );
-  }, [orders, query]);
+        o.destination.toLowerCase().includes(q) ||
+        o.salesperson.toLowerCase().includes(q)
+      );
+    });
+  }, [orders, repFilter, query]);
+
+  const tableTotal = tableOrders.reduce((s, o) => s + orderTotal(o), 0);
+  const tableTitle = repFilter ? `${firstName(repFilter)}'s orders` : "All orders";
 
   const selected = orders.find((o) => o.id === openId) || null;
-  const invoiceOrder = orders.find((o) => o.id === invoiceId) || null;
-
-  // Rob's report = one row per product line, across ALL salesmen
-  const reportRows = useMemo(() => {
-    const rows: {
-      salesman: string;
-      client: string;
-      destination: string;
-      orderDate: string;
-      shipDate: string;
-      po: string;
-      quantity: number;
-      product: string;
-      price: number;
-    }[] = [];
-    filtered.forEach((o) => {
-      o.lines.forEach((l) => {
-        rows.push({
-          salesman: o.salesperson,
-          client: o.customerName,
-          destination: o.destination,
-          orderDate: o.orderDate,
-          shipDate: o.shipDate,
-          po: o.customerPO,
-          quantity: l.quantity,
-          product: `${l.productName} ${l.size}`,
-          price: l.unitPrice,
-        });
-      });
-    });
-    return rows;
-  }, [filtered]);
-
-  const reportTSV = useMemo(() => {
-    const header = [
-      "Salesman",
-      "Client",
-      "Destination",
-      "Order Date",
-      "Ship Date",
-      "Customer P.O.",
-      "Quantity",
-      "Product",
-      "Price",
-    ].join("\t");
-    const lines = reportRows.map((r) =>
-      [
-        r.salesman,
-        r.client,
-        r.destination,
-        r.orderDate,
-        r.shipDate,
-        r.po,
-        r.quantity,
-        r.product,
-        r.price.toFixed(2),
-      ].join("\t")
-    );
-    return [header, ...lines].join("\n");
-  }, [reportRows]);
-
-  const copyReport = async () => {
-    try {
-      await navigator.clipboard.writeText(reportTSV);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
-
-  const downloadCSV = () => {
-    const csv = reportTSV
-      .split("\n")
-      .map((row) =>
-        row
-          .split("\t")
-          .map((cell) => `"${cell.replace(/"/g, '""')}"`)
-          .join(",")
-      )
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `crown-jewels-orders-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="cj-os">
-      <Topbar
-        tool="Order System"
-        nav={[
-          { label: "Orders", href: "/dashboard/order-system", active: true },
-          { label: "Receivables", href: "/dashboard/order-system/receivables" },
-        ]}
-        search={{
-          value: query,
-          onChange: setQuery,
-          placeholder: "Search orders, PO, customer…",
-        }}
-      />
-
       <main className="os-main">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -188,86 +197,252 @@ export default function OrderSystemPage() {
           className="os-page-head"
         >
           <div>
+            <div className="os-eyebrow">
+              <span className="os-eyebrow-rule" />
+              Sales desk · {MONTH_LABEL}
+            </div>
             <h1>
-              Orders<span className="accent">.</span>
+              {greeting()}, {firstName(CURRENT_USER.name)}
+              <span className="accent">.</span>
             </h1>
+            <p className="os-sub">
+              Your book at a glance — pipeline, who&apos;s carrying it, and
+              what&apos;s moving. Open any order for full detail.
+            </p>
           </div>
-          <Link href="/dashboard/order-system/new" className="os-btn primary">
-            + New order
-          </Link>
+          <div className="os-head-actions">
+            <Link href="/dashboard/order-system/new" className="os-btn primary">
+              + New order
+            </Link>
+          </div>
         </motion.div>
-
-        <div className="os-tabs">
-          {(["orders", "report"] as Tab[]).map((t) => (
-            <button
-              key={t}
-              className={tab === t ? "active" : ""}
-              onClick={() => setTab(t)}
-            >
-              {t === "orders" ? "Orders" : "Rob's Report"}
-              {tab === t && (
-                <motion.span layoutId="os-tab-underline" className="os-tab-underline" />
-              )}
-            </button>
-          ))}
-        </div>
 
         {!hydrated ? (
           <div className="os-empty">Loading…</div>
-        ) : tab === "orders" ? (
-          <OrdersTable orders={filtered} onOpen={(id) => setOpenId(id)} />
         ) : (
-          <div className="os-card os-report">
-            <div className="os-card-head">
-              <h2>Sales recap — for Rob</h2>
-              <div className="os-report-actions">
-                <button className="os-btn ghost sm" onClick={copyReport}>
-                  {copied ? "Copied ✓" : "Copy for Google Sheet"}
-                </button>
-                <button className="os-btn ghost sm" onClick={downloadCSV}>
-                  Export CSV
-                </button>
+          <>
+            {/* KPI strip */}
+            <div className="os-kpi-strip">
+              <div className="os-metric accent os-kpi">
+                <div className="os-metric-label">Booked sales</div>
+                <div className="os-metric-value">{money0(kpis.booked)}</div>
+                <div className="os-kpi-cap">{kpis.count} orders this period</div>
+              </div>
+              <div className="os-metric os-kpi">
+                <div className="os-metric-label">Open pipeline</div>
+                <div className="os-metric-value">{money0(kpis.pipeline)}</div>
+                <div className="os-kpi-cap">
+                  {kpis.pipelineCount} not yet shipped
+                </div>
+              </div>
+              <div className="os-metric good os-kpi">
+                <div className="os-metric-label">Collected</div>
+                <div className="os-metric-value">{money0(kpis.collected)}</div>
+                <div className="os-kpi-cap">paid to date</div>
+              </div>
+              <div className="os-metric os-kpi">
+                <div className="os-metric-label">Avg order</div>
+                <div className="os-metric-value">{money0(kpis.avg)}</div>
+                <div className="os-kpi-cap">per order</div>
+              </div>
+              <div className="os-metric os-kpi">
+                <div className="os-metric-label">Cases sold</div>
+                <div className="os-metric-value">
+                  {kpis.cases.toLocaleString()}
+                </div>
+                <div className="os-kpi-cap">across all reps</div>
               </div>
             </div>
-            <div className="os-report-scroll">
-              <table className="os-report-table">
-                <thead>
-                  <tr>
-                    <th>Salesman</th>
-                    <th>Client</th>
-                    <th>Destination</th>
-                    <th>Order Date</th>
-                    <th>Ship Date</th>
-                    <th>Customer P.O.</th>
-                    <th className="num">Quantity</th>
-                    <th>Product</th>
-                    <th className="num">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportRows.map((r, i) => (
-                    <tr key={i}>
-                      <td>{r.salesman}</td>
-                      <td>{r.client}</td>
-                      <td>{r.destination}</td>
-                      <td>{r.orderDate}</td>
-                      <td>{r.shipDate}</td>
-                      <td>{r.po}</td>
-                      <td className="num">{r.quantity.toLocaleString()}</td>
-                      <td>{r.product}</td>
-                      <td className="num">{money(r.price)}</td>
-                    </tr>
+
+            {/* Two-column: leaderboard + breakdowns */}
+            <div className="os-two-col">
+              <div className="os-card">
+                <div className="os-card-head">
+                  <h2>Sales by rep</h2>
+                  <span className="os-line-count">
+                    click a rep to filter orders
+                  </span>
+                </div>
+                <div className="os-lb">
+                  {reps.map((r, i) => {
+                    const me = firstName(r.name) === firstName(CURRENT_USER.name);
+                    const active = repFilter === r.name;
+                    return (
+                      <button
+                        key={r.name}
+                        className={`os-lb-row${i === 0 ? " top" : ""}${
+                          active ? " active" : ""
+                        }`}
+                        onClick={() =>
+                          setRepFilter(active ? null : r.name)
+                        }
+                      >
+                        <span className="os-lb-rank">{i + 1}</span>
+                        <span className="os-lb-av">
+                          {r.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+                        </span>
+                        <span className="os-lb-name">
+                          {r.name}
+                          {me && <span className="os-lb-you"> · you</span>}
+                        </span>
+                        <span className="os-lb-bar">
+                          <span
+                            style={{
+                              width: `${
+                                maxRep > 0
+                                  ? Math.max(6, (r.total / maxRep) * 100)
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </span>
+                        <span className="os-lb-meta">
+                          {r.count} order{r.count === 1 ? "" : "s"}
+                        </span>
+                        <span className="os-lb-total">{money0(r.total)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="os-card os-breakdown">
+                <div className="os-card-head">
+                  <h2>By commodity</h2>
+                </div>
+                <div className="os-bars">
+                  {byCommodity.rows.map((r) => (
+                    <BarRow
+                      key={r.id}
+                      label={r.label}
+                      value={r.total}
+                      max={byCommodity.max}
+                      color="#7a1f2b"
+                    />
                   ))}
-                </tbody>
-              </table>
+                </div>
+                <div className="os-card-head os-card-head-mid">
+                  <h2>By channel</h2>
+                </div>
+                <div className="os-bars">
+                  {byChannel.rows.map((r) => (
+                    <BarRow
+                      key={r.label}
+                      label={r.label}
+                      value={r.total}
+                      max={byChannel.max}
+                      color="#7a1f2b"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-            <p className="os-report-note">
-              Rob&apos;s live sheet — aggregated across <strong>all
-              salesmen</strong>, one row per product line. &quot;Copy for
-              Google Sheet&quot; pastes straight into his existing tab.
-              (Auto-sync to his Sheet wires up in the backend phase.)
-            </p>
-          </div>
+
+            {/* Orders table */}
+            <div className="os-card">
+              <div className="os-card-head">
+                <div className="os-card-head-titles">
+                  <h2>{tableTitle}</h2>
+                  <span className="os-line-count">
+                    {tableOrders.length} order
+                    {tableOrders.length === 1 ? "" : "s"} ·{" "}
+                    {money0(tableTotal)}
+                  </span>
+                </div>
+                <div className="tool-search">
+                  <svg
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                    />
+                  </svg>
+                  <input
+                    type="search"
+                    placeholder="Search orders, PO, customer…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {repFilter && (
+                <div className="os-filter-note">
+                  Filtered to <b>{firstName(repFilter)}</b> ·{" "}
+                  <button className="os-filter-clear" onClick={() => setRepFilter(null)}>
+                    clear ✕
+                  </button>
+                </div>
+              )}
+
+              {tableOrders.length === 0 ? (
+                <div className="os-empty os-empty-inline">
+                  {orders.length === 0
+                    ? "No orders yet. Create your first one."
+                    : "No orders match."}
+                </div>
+              ) : (
+                <div className="os-table-scroll">
+                  <table className="os-orders-table enriched">
+                    <thead>
+                      <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Rep</th>
+                        <th>Ship date</th>
+                        <th>Products</th>
+                        <th className="num">Total</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableOrders.map((o, i) => (
+                        <motion.tr
+                          key={o.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            delay: Math.min(i * 0.03, 0.3),
+                            duration: 0.4,
+                            ease: EASE,
+                          }}
+                          onClick={() => setOpenId(o.id)}
+                          className={`clickable status-row-${o.status}`}
+                        >
+                          <td className="mono">{o.orderNumber}</td>
+                          <td>
+                            <div className="os-cust">{o.customerName}</div>
+                            {o.channel && (
+                              <div className="os-cust-ch">{o.channel}</div>
+                            )}
+                          </td>
+                          <td>{firstName(o.salesperson)}</td>
+                          <td>{o.shipDate}</td>
+                          <td>
+                            <Dots
+                              accents={orderDots(o)}
+                              count={o.lines.length}
+                            />
+                          </td>
+                          <td className="num strong">
+                            {money(orderTotal(o))}
+                          </td>
+                          <td>
+                            <StatusPill status={o.status} />
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </main>
 
@@ -279,20 +454,6 @@ export default function OrderSystemPage() {
             order={selected}
             onClose={() => setOpenId(null)}
             onAdvance={(s) => setStatus(selected.id, s)}
-            onInvoice={() => openInvoice(selected.id)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Invoice overlay */}
-      <AnimatePresence>
-        {invoiceOrder && invoiceOrder.invoice && (
-          <InvoiceOverlay
-            key={invoiceOrder.id}
-            order={invoiceOrder}
-            onClose={() => setInvoiceId(null)}
-            onSend={(to) => markInvoiceSent(invoiceOrder.id, to)}
-            onMarkPaid={() => markPaid(invoiceOrder.id)}
           />
         )}
       </AnimatePresence>
@@ -300,62 +461,31 @@ export default function OrderSystemPage() {
   );
 }
 
-function OrdersTable({
-  orders,
-  onOpen,
+function BarRow({
+  label,
+  value,
+  max,
+  color,
 }: {
-  orders: Order[];
-  onOpen: (id: string) => void;
+  label: string;
+  value: number;
+  max: number;
+  color: string;
 }) {
-  if (orders.length === 0)
-    return <div className="os-empty">No orders yet. Create your first one.</div>;
-
+  const w = max > 0 ? Math.max(3, (value / max) * 100) : 0;
   return (
-    <div className="os-card">
-      <div className="os-table-scroll">
-        <table className="os-orders-table enriched">
-          <thead>
-            <tr>
-              <th>Order #</th>
-              <th>Customer</th>
-              <th>Destination</th>
-              <th>Ship Date</th>
-              <th>P.O.</th>
-              <th>Products</th>
-              <th className="num">Total</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((o, i) => (
-              <motion.tr
-                key={o.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.4, ease: EASE }}
-                onClick={() => onOpen(o.id)}
-                className={`clickable status-row-${o.status}`}
-              >
-                <td className="mono">{o.orderNumber}</td>
-                <td>
-                  <div className="os-cust">{o.customerName}</div>
-                  {o.channel && <div className="os-cust-ch">{o.channel}</div>}
-                </td>
-                <td>{o.destination || <span className="os-dim">—</span>}</td>
-                <td>{o.shipDate}</td>
-                <td>{o.customerPO}</td>
-                <td>
-                  <Dots accents={orderDots(o)} count={o.lines.length} />
-                </td>
-                <td className="num strong">{money(orderTotal(o))}</td>
-                <td>
-                  <StatusPill status={o.status} />
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="os-bar-row">
+      <span className="os-bar-label">{label}</span>
+      <span className="os-bar-track">
+        <motion.span
+          className="os-bar-fill"
+          style={{ background: color }}
+          initial={{ width: 0 }}
+          animate={{ width: `${w}%` }}
+          transition={{ duration: 0.6, ease: EASE }}
+        />
+      </span>
+      <span className="os-bar-value">{money0(value)}</span>
     </div>
   );
 }
@@ -389,16 +519,14 @@ function OrderDrawer({
   order,
   onClose,
   onAdvance,
-  onInvoice,
 }: {
   order: Order;
   onClose: () => void;
   onAdvance: (s: OrderStatus) => void;
-  onInvoice: () => void;
 }) {
   const total = orderTotal(order);
-  const idx = STATUS_FLOW.indexOf(order.status);
-  const next = idx >= 0 && idx < STATUS_FLOW.length - 1 ? STATUS_FLOW[idx + 1] : null;
+  const idx = SALES_FLOW.indexOf(order.status);
+  const next = idx >= 0 && idx < SALES_FLOW.length - 1 ? SALES_FLOW[idx + 1] : null;
 
   return (
     <>
@@ -511,17 +639,18 @@ function OrderDrawer({
         </div>
 
         <footer className="os-drawer-foot">
-          {next && (
-            <button className="os-btn ghost" onClick={() => onAdvance(next)}>
+          {next ? (
+            <button className="os-btn primary" onClick={() => onAdvance(next)}>
               Mark {STATUS_LABEL[next]}
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
             </button>
+          ) : (
+            <span className="os-drawer-foot-note">
+              {FOOT_NOTE[order.status] ?? ""}
+            </span>
           )}
-          <button className="os-btn primary" onClick={onInvoice}>
-            {order.invoice ? "View invoice" : "Generate invoice"}
-            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </button>
         </footer>
       </motion.aside>
     </>

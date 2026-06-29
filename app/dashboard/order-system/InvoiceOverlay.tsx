@@ -124,7 +124,7 @@ export default function InvoiceOverlay({
               </span>
               <div>
                 <div className="os-inv-mark">
-                  Crown <em>Jewels</em> Produce
+                  Crown <em><span className="cj-j">Jewels</span></em> Produce
                 </div>
                 <div className="os-inv-brand-meta">
                   Year-round produce programs · Grower-direct
