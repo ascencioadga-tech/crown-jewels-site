@@ -3092,3 +3092,28 @@
 .cj-os.standalone .os-save-btn:active {
   transform: translateY(1px);
 }
+
+/* ---- inline availability card (under the scanner) ---- */
+.cj-os.standalone .os-avail-app-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3a4525;
+  background: rgba(79, 94, 54, 0.14);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.cj-os.standalone .os-avail-app-tag .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4f5e36;
+}
+.cj-os.standalone .os-avail-app .os-allav-list {
+  max-height: 304px;
+  overflow-y: auto;
+}

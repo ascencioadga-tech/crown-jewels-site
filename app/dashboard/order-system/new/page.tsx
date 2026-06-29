@@ -335,6 +335,29 @@ export default function NewOrderPage() {
           <form className="os-form" onSubmit={submit}>
             <OrderScanner onExtract={applyExtraction} />
 
+            {/* Availability — right under the scanner in the app, so the rep
+                sees what's in stock the moment they arrive. */}
+            {standalone && (
+              <section className="os-card os-avail-app">
+                <div className="os-card-head">
+                  <h2>What&apos;s available</h2>
+                  <span className="os-avail-app-tag">
+                    <span className="dot" /> Live
+                  </span>
+                </div>
+                {!ready ? (
+                  <div className="os-avail-panel-empty">Loading inventory…</div>
+                ) : (
+                  <AllAvailabilityPanel
+                    boards={boards}
+                    draftQty={draftQty}
+                    activeCommodityId={activeCommodityId}
+                    activeSizeKey={activeLine?.sizeKey}
+                  />
+                )}
+              </section>
+            )}
+
             {/* Header */}
             <section className={`os-card${flash ? " cj-flash-fill" : ""}`}>
               <div className="os-card-head">
@@ -682,25 +705,28 @@ export default function NewOrderPage() {
             )}
           </form>
 
-          {/* RIGHT: live availability for ALL products */}
-          <aside className="os-new-avail">
-            <div className="os-avail-panel-head">
-              <span className="os-avail-panel-eyebrow">
-                <span className="dot" /> Live availability
-              </span>
-            </div>
+          {/* RIGHT: live availability for ALL products (dashboard only — the
+              standalone app shows it inline under the scanner instead). */}
+          {!standalone && (
+            <aside className="os-new-avail">
+              <div className="os-avail-panel-head">
+                <span className="os-avail-panel-eyebrow">
+                  <span className="dot" /> Live availability
+                </span>
+              </div>
 
-            {!ready ? (
-              <div className="os-avail-panel-empty">Loading inventory…</div>
-            ) : (
-              <AllAvailabilityPanel
-                boards={boards}
-                draftQty={draftQty}
-                activeCommodityId={activeCommodityId}
-                activeSizeKey={activeLine?.sizeKey}
-              />
-            )}
-          </aside>
+              {!ready ? (
+                <div className="os-avail-panel-empty">Loading inventory…</div>
+              ) : (
+                <AllAvailabilityPanel
+                  boards={boards}
+                  draftQty={draftQty}
+                  activeCommodityId={activeCommodityId}
+                  activeSizeKey={activeLine?.sizeKey}
+                />
+              )}
+            </aside>
+          )}
         </div>
         )}
       </main>
