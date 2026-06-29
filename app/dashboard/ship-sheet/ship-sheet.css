@@ -1616,6 +1616,15 @@
   width: 290px;
   max-width: 84%;
 }
+/* the REAL photo captured by the camera, shown inside the scan frame */
+.cj-ship .ship-shot {
+  display: block;
+  width: 100%;
+  max-height: 58vh;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(0, 0, 0, 0.12);
+}
 .cj-ship .ship-paper {
   position: relative;
   background:
@@ -1762,4 +1771,51 @@
   height: 18px;
   border-width: 3px;
   margin: 0;
+}
+
+/* ============================================================
+   Standalone /ship-sheet on a phone → REAL full-screen app.
+   (The dashboard copy always keeps the device-mockup look.)
+   ============================================================ */
+@media (max-width: 700px) {
+  .cj-ship.standalone {
+    min-height: 100dvh;
+    background: var(--mar-deep);
+  }
+  .cj-ship.standalone main {
+    max-width: none;
+    padding: 0;
+  }
+  .cj-ship.standalone .ship-head,
+  .cj-ship.standalone .ship-cap {
+    display: none;
+  }
+  .cj-ship.standalone .ship-stage {
+    padding: 0;
+  }
+  .cj-ship.standalone .ship-phone {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .cj-ship.standalone .ship-screen {
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .cj-ship.standalone .ship-island,
+  .cj-ship.standalone .ship-statusbar {
+    display: none; /* the real phone already has its own status bar */
+  }
+  .cj-ship.standalone .ship-appbar {
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  }
+  .cj-ship.standalone .ship-tabbar {
+    padding-bottom: calc(9px + env(safe-area-inset-bottom, 0px));
+  }
+  .cj-ship.standalone .ship-scanning {
+    border-radius: 0;
+  }
 }

@@ -15,8 +15,9 @@
    produce). Bilingual ES / EN. Pure-CSS animation, React state.
    ============================================================ */
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { QRCodeCanvas } from "qrcode.react";
 import ProduceGlyph from "../ProduceGlyph";
 import { useInboundUploads, loadToQR, type Inbound } from "../inboundUploads";
@@ -263,8 +264,27 @@ export default function ShipSheetPage() {
   const [sentLoad, setSentLoad] = useState<Inbound | null>(null);
   const [showLetter, setShowLetter] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [capturedImg, setCapturedImg] = useState<string | null>(null);
 
   const { addUpload } = useInboundUploads();
+
+  // Standalone public route (/ship-sheet) renders as a REAL full-screen phone
+  // app on phones; the dashboard copy keeps the device-mockup presentation.
+  const pathname = usePathname();
+  const standalone = (pathname || "").replace(/\/+$/, "") === "/ship-sheet";
+  // Hidden camera input the "Scan" button triggers (rear camera on phones).
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  // Optional ?g=RT|DV|SL deep-link opens straight to one grower (per-grower
+  // demo links / QR codes) — handy since the switcher is hidden full-screen.
+  useEffect(() => {
+    try {
+      const g = new URLSearchParams(window.location.search).get("g");
+      if (!g) return;
+      const found = GROWERS.find((x) => x.id.toLowerCase() === g.toLowerCase());
+      if (found) setGrowerId(found.id);
+    } catch {}
+  }, []);
 
   const grower = GROWERS.find((g) => g.id === growerId) || GROWERS[0];
   const catalog = CATALOG[grower.id];
@@ -284,6 +304,7 @@ export default function ShipSheetPage() {
     setTruck(EMPTY_TRUCK);
     setSubmitted(false);
     setSentLot(null);
+    setCapturedImg(null);
     setTab("ship");
   };
   const flash = (msg: string) => {
@@ -295,29 +316,50 @@ export default function ShipSheetPage() {
   const setLot = (i: number, v: string) => setLotByIdx((m) => ({ ...m, [i]: v }));
   const setTruckField = (f: keyof Truck, v: string) => setTruck((tk) => ({ ...tk, [f]: v }));
 
-  // Scan / voice — reads the grower's handwritten packing list, then OCR-fills
-  // the load (quantities + truck). The handwritten sheet shows during the scan.
+  // Fill the load from the grower's packing list — the "result" of a read.
+  const fillFromScan = () => {
+    const order = SCAN_ORDER[grower.id];
+    if (!order) return;
+    const q: Record<number, number> = {};
+    const lm: Record<number, string> = {};
+    order.lines.forEach((l) => {
+      q[l.idx] = l.cases;
+      lm[l.idx] = l.lot;
+    });
+    setQty(q);
+    setLotByIdx(lm);
+    setTruck(order.truck);
+  };
+
+  // "Say it" — voice dictation (simulated): listening animation, then fills.
   const assist = (kind: "scan" | "voice") => {
     setScanning(kind);
-    window.setTimeout(
-      () => {
-        setScanning(null);
-        const order = SCAN_ORDER[grower.id];
-        if (order) {
-          const q: Record<number, number> = {};
-          const lm: Record<number, string> = {};
-          order.lines.forEach((l) => {
-            q[l.idx] = l.cases;
-            lm[l.idx] = l.lot;
-          });
-          setQty(q);
-          setLotByIdx(lm);
-          setTruck(order.truck);
-        }
-        flash(kind === "scan" ? t("review") : t("reviewVoice"));
-      },
-      kind === "scan" ? 2200 : 1500
-    );
+    window.setTimeout(() => {
+      setScanning(null);
+      fillFromScan();
+      flash(kind === "scan" ? t("review") : t("reviewVoice"));
+    }, kind === "scan" ? 2200 : 1500);
+  };
+
+  // "Scan sheet" — opens the phone's REAL rear camera (file picker on desktop).
+  const openCamera = () => {
+    if (fileRef.current) fileRef.current.value = "";
+    fileRef.current?.click();
+  };
+  // Once a photo is captured, show it in the scan frame, then read + fill.
+  const onScanFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return; // camera / file dialog canceled → no-op
+    setCapturedImg((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setScanning("scan");
+    window.setTimeout(() => {
+      setScanning(null);
+      fillFromScan();
+      flash(t("review"));
+    }, 2200);
   };
 
   const send = () => {
@@ -367,13 +409,26 @@ export default function ShipSheetPage() {
     setSentLot(null);
     setSentLoad(null);
     setShowLetter(false);
+    setCapturedImg((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setTab("ship");
   };
 
   const showActionBar = tab === "ship" && !submitted;
 
   return (
-    <div className="cj-ship">
+    <div className={`cj-ship${standalone ? " standalone" : ""}`}>
+      {/* hidden camera input — "Scan sheet" opens the rear camera on phones */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={onScanFile}
+      />
       <main>
         {/* ---------------- Page head (above the phone) ---------------- */}
         <header className="ship-head">
@@ -451,7 +506,11 @@ export default function ShipSheetPage() {
                 <div className="ship-scanning">
                   {scanning === "scan" ? (
                     <div className="ship-scanframe">
-                      <ScanSheet grower={grower} order={SCAN_ORDER[grower.id]} />
+                      {capturedImg ? (
+                        <img className="ship-shot" src={capturedImg} alt="Packing list photo" />
+                      ) : (
+                        <ScanSheet grower={grower} order={SCAN_ORDER[grower.id]} />
+                      )}
                       <span className="ship-scanbeam" />
                       <span className="ship-scan-corner tl" />
                       <span className="ship-scan-corner tr" />
@@ -479,7 +538,7 @@ export default function ShipSheetPage() {
                 {submitted ? (
                   <DoneScreen grower={grower} lang={lang} t={t} lot={sentLot || ""} totalCases={totalCases} lineCount={lineCount} truck={truck} load={sentLoad} onLetter={() => setShowLetter(true)} onAgain={reset} />
                 ) : tab === "ship" ? (
-                  <ShipBody grower={grower} catalog={catalog} qty={qty} lotByIdx={lotByIdx} truck={truck} lang={lang} t={t} lineCount={lineCount} totalCases={totalCases} onBump={bump} onSetLine={setLine} onLot={setLot} onTruck={setTruckField} onAssist={assist} />
+                  <ShipBody grower={grower} catalog={catalog} qty={qty} lotByIdx={lotByIdx} truck={truck} lang={lang} t={t} lineCount={lineCount} totalCases={totalCases} onBump={bump} onSetLine={setLine} onLot={setLot} onTruck={setTruckField} onAssist={assist} onCamera={openCamera} />
                 ) : tab === "history" ? (
                   <HistoryBody grower={grower} lang={lang} t={t} />
                 ) : (
@@ -598,6 +657,7 @@ function ShipBody({
   onLot,
   onTruck,
   onAssist,
+  onCamera,
 }: {
   grower: Grower;
   catalog: CatItem[];
@@ -613,6 +673,7 @@ function ShipBody({
   onLot: (i: number, v: string) => void;
   onTruck: (f: keyof Truck, v: string) => void;
   onAssist: (kind: "scan" | "voice") => void;
+  onCamera: () => void;
 }) {
   const dateStr = new Date().toLocaleDateString(lang === "es" ? "es-MX" : "en-US", {
     weekday: "long",
@@ -645,7 +706,7 @@ function ShipBody({
 
       {/* assist */}
       <div className="ship-assist">
-        <button onClick={() => onAssist("scan")}>
+        <button onClick={onCamera}>
           <span className="ai">
             <Svg n="cam" w={19} />
           </span>
