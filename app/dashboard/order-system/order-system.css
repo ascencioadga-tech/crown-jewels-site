@@ -2862,3 +2862,233 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   Standalone /new-order — crafted as a PHONE APP.
+   App header, single-column shell, labeled line cards, and a
+   sticky maroon Save bar. All scoped to .cj-os.standalone so the
+   dashboard order desk (.cj-os without .standalone) is untouched.
+   ============================================================ */
+.cj-os.standalone {
+  background: #fff;
+}
+.cj-os.standalone .os-main {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 0 0 116px; /* clear the fixed save bar */
+}
+.cj-os.standalone .os-page-head {
+  display: none;
+}
+.cj-os.standalone .os-new-avail {
+  display: none; /* the per-line "left" chip covers availability on a phone */
+}
+.cj-os.standalone .os-new-layout {
+  display: block;
+}
+.cj-os.standalone .os-form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 14px 14px 0;
+}
+.cj-os.standalone .os-form > * {
+  margin: 0;
+}
+.cj-os.standalone .scan-card {
+  margin-bottom: 0;
+}
+.cj-os.standalone .os-field-grid {
+  grid-template-columns: 1fr;
+}
+.cj-os.standalone .os-total-row {
+  display: none; /* the sticky Save bar shows the total */
+}
+.cj-os.standalone .os-line-header-av {
+  display: none;
+}
+
+/* ---- app header (maroon) ---- */
+.cj-os.standalone .os-newapp-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: #511319;
+  color: #fff;
+  padding: calc(11px + env(safe-area-inset-top, 0px)) 16px 13px;
+}
+.cj-os.standalone .os-newapp-crest {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  flex: none;
+  background: linear-gradient(150deg, #a8404e, #7a1f2b);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.4);
+}
+.cj-os.standalone .os-newapp-id {
+  min-width: 0;
+  line-height: 1.18;
+}
+.cj-os.standalone .os-newapp-id b {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  display: block;
+}
+.cj-os.standalone .os-newapp-id span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.66);
+}
+.cj-os.standalone .os-newapp-date {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+}
+
+/* ---- labeled line-item card ---- */
+.cj-os.standalone .os-lines {
+  padding: 6px 0 0;
+}
+.cj-os.standalone .os-line-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba(14, 20, 17, 0.1);
+  border-radius: 14px;
+  padding: 13px 13px 12px;
+  margin-bottom: 11px;
+}
+.cj-os.standalone .os-line-card:last-of-type {
+  margin-bottom: 0;
+}
+.cj-os.standalone .os-lc-del {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid rgba(14, 20, 17, 0.12);
+  background: #fff;
+  color: rgba(14, 20, 17, 0.45);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cj-os.standalone .os-lc-del:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.cj-os.standalone .os-lc-field {
+  display: block;
+}
+.cj-os.standalone .os-lc-field > span {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(14, 20, 17, 0.45);
+  margin-bottom: 4px;
+}
+.cj-os.standalone .os-lc-field select,
+.cj-os.standalone .os-lc-field input {
+  width: 100%;
+}
+.cj-os.standalone .os-lc-product {
+  padding-right: 32px; /* clear the × button */
+}
+.cj-os.standalone .os-lc-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.9fr 0.9fr;
+  gap: 9px;
+  margin-top: 10px;
+}
+.cj-os.standalone .os-lc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(14, 20, 17, 0.1);
+}
+.cj-os.standalone .os-lc-total {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #0e1411;
+}
+.cj-os.standalone .os-lc-dim {
+  font-size: 11.5px;
+  color: rgba(14, 20, 17, 0.4);
+}
+.cj-os.standalone .os-add-line {
+  margin: 12px 0 4px;
+  width: 100%;
+}
+
+/* ---- sticky maroon Save bar ---- */
+.cj-os.standalone .os-save-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 460px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(14, 20, 17, 0.08);
+  padding: 11px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.cj-os.standalone .os-save-tot {
+  flex: none;
+  line-height: 1;
+}
+.cj-os.standalone .os-save-tot .n {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #0e1411;
+  font-variant-numeric: tabular-nums;
+}
+.cj-os.standalone .os-save-tot .l {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: rgba(14, 20, 17, 0.55);
+  margin-top: 3px;
+}
+.cj-os.standalone .os-save-btn {
+  flex: 1;
+  height: 52px;
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #a8404e, #7a1f2b);
+  color: #fff;
+  font: 700 15px var(--font-geist-sans), system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 12px 24px -12px rgba(122, 31, 43, 0.7);
+}
+.cj-os.standalone .os-save-btn:active {
+  transform: translateY(1px);
+}

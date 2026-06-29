@@ -269,6 +269,21 @@ export default function NewOrderPage() {
     <div className={`cj-os${standalone ? " standalone" : ""}`}>
 
       <main className="os-main">
+        {standalone && (
+          <header className="os-newapp-bar">
+            <span className="os-newapp-crest">CJ</span>
+            <div className="os-newapp-id">
+              <b>New order</b>
+              <span>Sales desk · {salesperson.split(" ")[0]}</span>
+            </div>
+            <span className="os-newapp-date">
+              {new Date(orderDate + "T00:00:00").toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </header>
+        )}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -431,6 +446,91 @@ export default function NewOrderPage() {
                   const board = boards[l.commodityId];
                   const sizeOpts = board ? board.columns : [];
                   const av = availFor(l.commodityId, l.sizeKey);
+                  if (standalone)
+                    return (
+                      <div
+                        key={l.id}
+                        className="os-line-card"
+                        onFocusCapture={() => setActiveLineId(l.id)}
+                      >
+                        <button
+                          type="button"
+                          className="os-lc-del"
+                          onClick={() => removeLine(l.id)}
+                          disabled={lines.length === 1}
+                          aria-label="Remove line"
+                        >
+                          ×
+                        </button>
+                        <label className="os-lc-field os-lc-product">
+                          <span>Product</span>
+                          <select
+                            value={l.commodityId}
+                            onChange={(e) => pickCommodity(l.id, e.target.value)}
+                          >
+                            <option value="">Select…</option>
+                            {commodities.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <div className="os-lc-grid">
+                          <label className="os-lc-field">
+                            <span>Size</span>
+                            <select
+                              value={l.sizeKey}
+                              onChange={(e) => setLine(l.id, { sizeKey: e.target.value })}
+                              disabled={!l.commodityId}
+                            >
+                              {l.commodityId ? (
+                                sizeOpts.map((s) => (
+                                  <option key={s.key} value={s.key}>
+                                    {s.label}
+                                  </option>
+                                ))
+                              ) : (
+                                <option>—</option>
+                              )}
+                            </select>
+                          </label>
+                          <label className="os-lc-field">
+                            <span>Qty</span>
+                            <input
+                              type="number"
+                              min="0"
+                              inputMode="numeric"
+                              placeholder="0"
+                              value={l.quantity}
+                              onChange={(e) => setLine(l.id, { quantity: e.target.value })}
+                            />
+                          </label>
+                          <label className="os-lc-field">
+                            <span>Unit $</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              inputMode="decimal"
+                              placeholder="0.00"
+                              value={l.unitPrice}
+                              onChange={(e) => setLine(l.id, { unitPrice: e.target.value })}
+                            />
+                          </label>
+                        </div>
+                        <div className="os-lc-foot">
+                          {!ready || !av ? (
+                            <span className="os-lc-dim">No stock tracked</span>
+                          ) : (
+                            <span className={`os-avail-chip ${av.after < 0 ? "over" : "ok"}`}>
+                              {fig(av.after)} left
+                            </span>
+                          )}
+                          <span className="os-lc-total">{money(lineTotal(l))}</span>
+                        </div>
+                      </div>
+                    );
                   return (
                     <div
                       key={l.id}
@@ -554,19 +654,32 @@ export default function NewOrderPage() {
               </div>
             )}
 
-            <div className="os-form-foot">
-              {!standalone && (
+            {standalone ? (
+              <div className="os-save-bar">
+                <div className="os-save-tot">
+                  <span className="n">{money(orderTotal)}</span>
+                  <span className="l">Order total</span>
+                </div>
+                <button type="submit" className="os-save-btn">
+                  Save order
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <div className="os-form-foot">
                 <Link href="/dashboard/order-system" className="os-btn ghost">
                   Cancel
                 </Link>
-              )}
-              <button type="submit" className="os-btn primary">
-                Save order
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </button>
-            </div>
+                <button type="submit" className="os-btn primary">
+                  Save order
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </form>
 
           {/* RIGHT: live availability for ALL products */}
