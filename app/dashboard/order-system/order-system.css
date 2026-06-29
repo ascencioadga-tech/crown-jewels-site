@@ -2909,10 +2909,10 @@
 }
 
 /* ---- app header (maroon) ---- */
+/* NOT sticky on purpose: a sticky bar pinned to top:0 makes iOS Safari tint its
+   toolbar to match (maroon). Left static, Safari uses theme-color #fff → white
+   top, matching the Ship Sheet. The header scrolls with the page. */
 .cj-os.standalone .os-newapp-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
   display: flex;
   align-items: center;
   gap: 11px;
