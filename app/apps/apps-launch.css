@@ -1,0 +1,19 @@
+/* Two-app launcher — centered boxes, reusing the workspace .appbox cards.
+   (Public /apps page: a small dashboard to reach the standalone apps.) */
+.cj-home .apps-launch {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 26px;
+  padding: 10px 4px 52px;
+}
+@media (max-width: 760px) {
+  .cj-home .apps-launch {
+    gap: 18px;
+  }
+  .cj-home .apps-launch .appbox-cell {
+    flex: 0 0 100%;
+    max-width: 360px;
+  }
+}
