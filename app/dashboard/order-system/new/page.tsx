@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SALESPEOPLE, TERMS_OPTIONS, commodities, money } from "../data";
@@ -68,6 +68,12 @@ export default function NewOrderPage() {
   const [activeLineId, setActiveLineId] = useState<string>("");
   const [error, setError] = useState("");
   const [flash, setFlash] = useState(false);
+  const [savedOrder, setSavedOrder] = useState<Order | null>(null);
+
+  // Standalone public route (/new-order): the rep's order app — no dashboard
+  // chrome, and saving shows a confirmation instead of bouncing to the board.
+  const pathname = usePathname();
+  const standalone = (pathname || "").replace(/\/+$/, "") === "/new-order";
 
   // Board per commodity = inventory netted against existing saved orders.
   const boards = useMemo(() => {
@@ -231,11 +237,36 @@ export default function NewOrderPage() {
     }
 
     addOrder(order);
-    router.push("/dashboard/order-system");
+    if (standalone) {
+      setSavedOrder(order);
+      if (typeof window !== "undefined")
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      router.push("/dashboard/order-system");
+    }
+  };
+
+  // Standalone: clear the form for the next order after a save.
+  const resetForm = () => {
+    setSavedOrder(null);
+    setCustomerName("");
+    setDestination("");
+    setCustomerPO("");
+    setOrderDate(today());
+    setShipDate(today());
+    setSalesperson(SALESPEOPLE[0]);
+    setTerms(TERMS_OPTIONS[2]);
+    setNotes("");
+    setGrowerId("");
+    setLotCode("");
+    setLines([newLine()]);
+    setActiveLineId("");
+    setError("");
+    setFlash(false);
   };
 
   return (
-    <div className="cj-os">
+    <div className={`cj-os${standalone ? " standalone" : ""}`}>
 
       <main className="os-main">
         <motion.div
@@ -245,9 +276,11 @@ export default function NewOrderPage() {
           className="os-page-head"
         >
           <div>
-            <Link href="/dashboard/order-system" className="os-back">
-              ← All orders
-            </Link>
+            {!standalone && (
+              <Link href="/dashboard/order-system" className="os-back">
+                ← All orders
+              </Link>
+            )}
             <h1>
               New order<span className="accent">.</span>
             </h1>
@@ -258,6 +291,30 @@ export default function NewOrderPage() {
           </div>
         </motion.div>
 
+        {savedOrder ? (
+          <div className="os-card os-saved">
+            <div className="os-saved-ck">
+              <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+            <h2>
+              Order saved<span className="accent">.</span>
+            </h2>
+            <p>
+              {savedOrder.customerName} · {savedOrder.lines.length}{" "}
+              {savedOrder.lines.length === 1 ? "line" : "lines"} ·{" "}
+              {money(savedOrder.lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0))}
+            </p>
+            <div className="os-saved-num">{savedOrder.orderNumber}</div>
+            <p className="os-saved-note">
+              It&apos;s on the sales board and counted against availability.
+            </p>
+            <button type="button" className="os-btn primary" onClick={resetForm}>
+              New order
+            </button>
+          </div>
+        ) : (
         <div className="os-new-layout">
           {/* LEFT: the order builder */}
           <form className="os-form" onSubmit={submit}>
@@ -498,9 +555,11 @@ export default function NewOrderPage() {
             )}
 
             <div className="os-form-foot">
-              <Link href="/dashboard/order-system" className="os-btn ghost">
-                Cancel
-              </Link>
+              {!standalone && (
+                <Link href="/dashboard/order-system" className="os-btn ghost">
+                  Cancel
+                </Link>
+              )}
               <button type="submit" className="os-btn primary">
                 Save order
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -530,6 +589,7 @@ export default function NewOrderPage() {
             )}
           </aside>
         </div>
+        )}
       </main>
     </div>
   );

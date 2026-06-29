@@ -2755,3 +2755,110 @@
   border: none;
   border-radius: 0;
 }
+
+/* ============================================================
+   Standalone /new-order — the sales rep's order app.
+   Saved-order success card + phone-friendly line cards.
+   ============================================================ */
+.cj-os .os-saved {
+  text-align: center;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 30px 26px 26px;
+}
+.cj-os .os-saved-ck {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #a8404e, #7a1f2b);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 14px 30px -12px rgba(122, 31, 43, 0.6);
+}
+.cj-os .os-saved h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #0e1411;
+  letter-spacing: -0.02em;
+}
+.cj-os .os-saved h2 .accent {
+  color: #7a1f2b;
+  font-style: italic;
+}
+.cj-os .os-saved > p {
+  color: rgba(14, 20, 17, 0.6);
+  font-size: 14px;
+  margin-top: 4px;
+}
+.cj-os .os-saved-num {
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+  color: #7a1f2b;
+  font-size: 15px;
+  margin: 12px 0 2px;
+}
+.cj-os .os-saved-note {
+  font-size: 12.5px;
+  color: rgba(14, 20, 17, 0.5);
+  margin-bottom: 18px;
+}
+.cj-os .os-saved .os-btn.primary {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ---- phone: stack each order line into a readable card ---- */
+@media (max-width: 640px) {
+  .cj-os.standalone .os-new-avail {
+    display: none; /* the inline per-line Avail chip covers it on a phone */
+  }
+  .cj-os .os-line-header-av {
+    display: none;
+  }
+  .cj-os .os-line-row-av {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
+    padding: 12px 12px 14px;
+    border: 1px solid rgba(14, 20, 17, 0.1);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .cj-os .os-line-row-av > select:nth-child(1),
+  .cj-os .os-line-row-av > select:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+  .cj-os .os-line-row-av > input:nth-child(3) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .cj-os .os-line-row-av > input:nth-child(5) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .cj-os .os-line-row-av > .os-line-avail {
+    grid-column: 1;
+    grid-row: 4;
+    justify-content: flex-start;
+  }
+  .cj-os .os-line-row-av > .os-line-total {
+    grid-column: 2;
+    grid-row: 4;
+    align-self: center;
+  }
+  .cj-os .os-line-row-av > .os-line-del {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  .cj-os .os-form-foot {
+    flex-direction: column-reverse;
+  }
+  .cj-os .os-form-foot .os-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

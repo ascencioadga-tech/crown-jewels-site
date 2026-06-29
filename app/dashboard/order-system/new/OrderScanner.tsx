@@ -129,6 +129,7 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
   const [doneResult, setDoneResult] = useState<ScanResult | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const recRef = useRef<{ stream?: MediaStream; ctx?: AudioContext; timer?: ReturnType<typeof setInterval>; raf?: number }>({});
 
@@ -281,7 +282,7 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
         <span className="ai-badge">AI Scan</span>
       </div>
       <p className="scan-sub">
-        Drop a photo of the customer&apos;s P.O., email, or WhatsApp message — or record the order by voice.
+        Take a photo of the customer&apos;s P.O., email, or WhatsApp message — or upload it, or record by voice.
         Crown Jewels reads it and builds the order below.
       </p>
 
@@ -302,11 +303,20 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
             <span>Drop a photo, email or WhatsApp order (image or PDF), or <b>&nbsp;click to upload</b></span>
             <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) startScan(f); }} />
           </div>
+          {/* camera input — opens the rear camera on phones to photograph the order */}
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) startScan(f); }} />
 
           {!recording ? (
             <>
-              <div className="scan-or"><span />or by voice<span /></div>
+              <div className="scan-or"><span />or<span /></div>
               <div className="audio-row">
+                <button type="button" className="rec-btn" onClick={() => cameraRef.current?.click()}>
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                  </svg>
+                  Take a photo
+                </button>
                 <button type="button" className="rec-btn" onClick={startRec}>
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.7">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
