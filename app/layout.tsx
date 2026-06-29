@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Fraunces, Lora, Caveat } from "next/font/google";
 import "./globals.css";
 
@@ -38,6 +38,12 @@ export const metadata: Metadata = {
   title: "Crown Jewels Produce — Year-round programs, grower-direct",
   description:
     "Year-round produce programs across 16 commodities. Grower-direct from California, Mexico, and Chile. Serving retail, foodservice, wholesale, and export buyers.",
+};
+
+// White browser/iOS status-bar tint — keeps the top of the standalone phone
+// apps white instead of the site's cream background.
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
