@@ -6,6 +6,12 @@
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
+# Serverless functions (the AI order reader). Needs ANTHROPIC_API_KEY in the
+# site's environment variables.
+[functions]
+  directory    = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Don't let HTML pages get stuck in CDN cache after a redeploy.
 # (Hashed assets in /_next/static get their own immutable cache below.)
 [[headers]]

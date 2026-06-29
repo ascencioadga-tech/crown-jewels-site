@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { commodities } from "../data";
 import "./order-scanner.css";
 
 /** Render a PDF's first page to a PNG data URL (so an email/WhatsApp order PDF
@@ -113,6 +114,65 @@ const VOICE_STEPS = [
 
 type StepState = "idle" | "doing" | "done";
 
+/* ============================================================
+   Real AI order reader (the camera / photo path).
+   Sends the captured photo to the read-order Netlify Function,
+   which reads it with Claude vision and returns a ScanResult.
+   Returns null if the backend is unavailable (local dev, or the
+   API key isn't set yet) so the caller falls back to the demo.
+   ============================================================ */
+const AI_CATALOG = commodities.map((c) => ({ id: c.id, name: c.name }));
+
+/** Downscale a captured photo to a JPEG data URL (smaller payload, within the
+    vision model's optimal resolution). */
+function downscaleToDataURL(file: File, maxDim = 1568): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      URL.revokeObjectURL(url);
+      if (!ctx) return reject(new Error("no-2d-context"));
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image-decode-failed"));
+    };
+    img.src = url;
+  });
+}
+
+/** Read a real order from the photo; null if the reader is unavailable/failed. */
+async function readOrderFromImage(file: File): Promise<ScanResult | null> {
+  try {
+    const image = await downscaleToDataURL(file);
+    const res = await fetch("/.netlify/functions/read-order", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ image, catalog: AI_CATALOG }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as Partial<ScanResult> & { error?: string };
+    if (data.error || !Array.isArray(data.lines)) return null;
+    return {
+      customer: data.customer ?? "",
+      destination: data.destination ?? "",
+      po: data.po ?? "",
+      lines: data.lines,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult) => void }) {
   const [stage, setStage] = useState<"entry" | "scan">("entry");
   const [recording, setRecording] = useState(false);
@@ -165,14 +225,15 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
     setTranscript(null);
     setStage("scan");
     const name = file.name.toLowerCase();
-    // Route the demo asset → its order. WhatsApp screenshots, email PDFs, else photo.
+    // Demo fallback profile — used if the real reader is unavailable/fails.
     const key: keyof typeof PROFILES = /whats|chat|sms/.test(name)
       ? "whatsapp"
       : /email|mail|gmail|\.eml|inbox/.test(name)
       ? "email"
       : "photo";
+    const isImage = file.type.startsWith("image/");
     // Preview: images show directly; PDFs render their first page (else a doc tile).
-    if (file.type.startsWith("image/")) {
+    if (isImage) {
       setThumb(URL.createObjectURL(file));
       setDocName(null);
     } else {
@@ -182,9 +243,15 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
         if (url) setThumb(url);
       });
     }
-    runSteps(SCAN_STEPS, () => {
+    // Photos go to the real AI reader (runs while the steps animate). PDFs/voice
+    // keep the scripted demo until the backend handles them too.
+    const readPromise: Promise<ScanResult | null> = isImage
+      ? readOrderFromImage(file)
+      : Promise.resolve(null);
+    runSteps(SCAN_STEPS, async () => {
+      const aiResult = await readPromise;
       setStepsDone(true);
-      finish(PROFILES[key]);
+      finish(aiResult && aiResult.lines.length > 0 ? aiResult : PROFILES[key]);
     });
   };
 
