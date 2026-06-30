@@ -40,12 +40,15 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
-/* The standalone phone apps use white surfaces — keep the page (and the iOS
-   status-bar safe-area that samples it) white, not the site's cream. */
+/* The standalone phone apps + the /apps launcher use white surfaces — keep the
+   page (and the iOS status-bar safe-area that samples it) white, never the
+   site's cream. */
 html:has(.cj-ship.standalone),
 html:has(.cj-os.standalone),
+html:has(.lux),
 body:has(.cj-ship.standalone),
-body:has(.cj-os.standalone) {
+body:has(.cj-os.standalone),
+body:has(.lux) {
   background: #ffffff;
 }
 
