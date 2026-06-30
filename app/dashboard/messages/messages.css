@@ -563,7 +563,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cj-msg.standalone .msg-ab-title .cj-joya { color: #f0c869; }
+/* On-brand: white wordmark on the maroon chrome (gold is reserved for the crown
+   emblem only) — matches the Ship Sheet / New Order app bars. */
+.cj-msg.standalone .msg-ab-title .cj-joya { color: #ffffff; }
 .cj-msg.standalone .msg-ab-title .sub {
   font-size: 11.5px;
   color: rgba(255, 255, 255, 0.62);
