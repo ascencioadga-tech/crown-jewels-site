@@ -38,6 +38,17 @@ export const metadata: Metadata = {
   title: "Crown Jewels Produce — Year-round programs, grower-direct",
   description:
     "Year-round produce programs across 16 commodities. Grower-direct from California, Mexico, and Chile. Serving retail, foodservice, wholesale, and export buyers.",
+  // Launch as a full-screen standalone app when added to the iOS home screen —
+  // no Safari URL bar / search. (An in-app back arrow replaces the browser's.)
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Crown Jewels",
+  },
+  // Next emits the modern `mobile-web-app-capable` from appleWebApp.capable;
+  // add the legacy Apple tag older iOS still reads for standalone launch.
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 // White browser/iOS status-bar tint — keeps the top of the standalone phone

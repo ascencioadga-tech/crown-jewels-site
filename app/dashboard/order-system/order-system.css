@@ -2920,6 +2920,21 @@
   color: #fff;
   padding: calc(11px + env(safe-area-inset-top, 0px)) 16px 13px;
 }
+/* back arrow → /apps (standalone home-screen app has no browser back) */
+.cj-os.standalone .os-newapp-back {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: none;
+  text-decoration: none;
+}
+.cj-os.standalone .os-newapp-back:active {
+  background: rgba(255, 255, 255, 0.22);
+}
 .cj-os.standalone .os-newapp-crest {
   width: 38px;
   height: 38px;
