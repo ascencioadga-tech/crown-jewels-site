@@ -3,8 +3,9 @@
 // Public app launcher — an elegant, light "front desk" for the standalone phone
 // apps, presented as a horizontal carousel. White, airy, refined. No login.
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { CURRENT_USER, firstName } from "../dashboard/user";
+import { APPS_AUTH_KEY, signInApps, signOutApps } from "./appsAuth";
 import "./apps-launch.css";
 
 type Kind = "ship" | "sales";
@@ -40,6 +41,18 @@ const APPS: LaunchApp[] = [
 const GUILLOCHE = Array.from({ length: 72 }, (_, i) => (i * 180) / 72);
 
 export default function AppsLauncher() {
+  // Client-side gate: show the login until the workspace is unlocked. `ready`
+  // avoids flashing the launcher before localStorage is read.
+  const [ready, setReady] = useState(false);
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => {
+    try {
+      setAuthed(localStorage.getItem(APPS_AUTH_KEY) === "1");
+    } catch {}
+    setReady(true);
+  }, []);
+
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
@@ -56,7 +69,7 @@ export default function AppsLauncher() {
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, [update]);
+  }, [update, authed]);
 
   // Synchronous scrollLeft (smooth-scroll is paused in the preview iframe).
   const scrollByCard = (dir: -1 | 1) => {
@@ -80,6 +93,9 @@ export default function AppsLauncher() {
         </svg>
       </div>
 
+      {ready && !authed && <LoginGate onSuccess={() => setAuthed(true)} />}
+
+      {ready && authed && (
       <main className="lux-main">
         <header className="lux-hero">
           <img className="lux-crest" src="/crown-emblem.png" alt="Crown Jewels" />
@@ -138,8 +154,86 @@ export default function AppsLauncher() {
             </button>
           </div>
         </div>
+
+        <button
+          type="button"
+          className="lux-signout"
+          onClick={() => {
+            signOutApps();
+            setAuthed(false);
+          }}
+        >
+          Sign out
+        </button>
       </main>
+      )}
     </div>
+  );
+}
+
+/* ---- login gate (sits in front of the workspace launcher) ---- */
+function LoginGate({ onSuccess }: { onSuccess: () => void }) {
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState(false);
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (signInApps(user, pass)) onSuccess();
+    else setError(true);
+  };
+
+  return (
+    <main className="lux-main lux-login">
+      <form className="lux-login-card" onSubmit={submit}>
+        <img className="lux-login-crest" src="/crown-emblem.png" alt="" aria-hidden="true" />
+        <h1>
+          Crown <span className="cj-j cj-joya">Jewels</span>
+        </h1>
+        <p className="lux-login-sub">Sign in to your workspace</p>
+
+        <label className="lux-field">
+          <span>Username</span>
+          <input
+            className="lux-input"
+            type="text"
+            value={user}
+            onChange={(e) => {
+              setUser(e.target.value);
+              setError(false);
+            }}
+            autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+        </label>
+
+        <label className="lux-field">
+          <span>Password</span>
+          <input
+            className="lux-input"
+            type="password"
+            value={pass}
+            onChange={(e) => {
+              setPass(e.target.value);
+              setError(false);
+            }}
+            autoComplete="current-password"
+          />
+        </label>
+
+        {error && (
+          <div className="lux-error" role="alert">
+            That username or password doesn&apos;t match. Please try again.
+          </div>
+        )}
+
+        <button type="submit" className="lux-signin">
+          Sign in
+        </button>
+      </form>
+    </main>
   );
 }
 
