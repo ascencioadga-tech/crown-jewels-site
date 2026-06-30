@@ -45,9 +45,11 @@ body {
    site's cream. */
 html:has(.cj-ship.standalone),
 html:has(.cj-os.standalone),
+html:has(.cj-msg.standalone),
 html:has(.lux),
 body:has(.cj-ship.standalone),
 body:has(.cj-os.standalone),
+body:has(.cj-msg.standalone),
 body:has(.lux) {
   background: #ffffff;
 }

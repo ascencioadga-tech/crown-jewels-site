@@ -513,3 +513,138 @@
   .cj-msg .chat-card { grid-template-columns: 1fr; }
   .cj-msg .ch-rail { display: none; }
 }
+
+/* ============================================================
+   Standalone /chat — phone app bar (maroon chrome).
+   Rendered only on the public /chat route (the `standalone`
+   flag); the dashboard copy never includes it. Hidden on wide
+   screens so /chat on a desktop still shows the two-pane chat.
+   ============================================================ */
+/* Hidden by default (covers /chat on a desktop, which keeps the two-pane
+   chat); the phone media query below switches it on. */
+.cj-msg.standalone .msg-appbar {
+  display: none;
+  flex: none;
+  background: #511319;
+  color: #fff;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 15px 12px;
+  padding-top: calc(11px + env(safe-area-inset-top, 0px));
+}
+.cj-msg.standalone .msg-back {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: -2px;
+  padding: 0;
+}
+.cj-msg.standalone .msg-back:active { background: rgba(255, 255, 255, 0.2); }
+.cj-msg.standalone .msg-ab-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.cj-msg.standalone .msg-ab-title b {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cj-msg.standalone .msg-ab-title .cj-joya { color: #f0c869; }
+.cj-msg.standalone .msg-ab-title .sub {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   Standalone /chat on a phone → REAL full-screen chat app.
+   Single-pane master→detail: the conversation LIST (the rail)
+   and the open THREAD (the main pane) each take the full width;
+   data-mview toggles which one is visible. The dashboard route
+   (no .standalone) is unaffected.
+   ============================================================ */
+@media (max-width: 760px) {
+  .cj-msg.standalone {
+    min-height: 100dvh;
+    height: 100dvh;
+    background: #fff;
+    background-image: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .cj-msg.standalone .msg-appbar { display: flex; }
+
+  .cj-msg.standalone main {
+    flex: 1;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  .cj-msg.standalone .chat-card {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    display: block;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* rail (the conversation list) becomes the full-width master pane */
+  .cj-msg.standalone .ch-rail {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    background: #fff;
+  }
+  /* hide the desktop workspace header — the maroon app bar replaces it */
+  .cj-msg.standalone .ch-workspace { display: none; }
+  .cj-msg.standalone .ch-nav { padding: 8px 8px 14px; }
+  .cj-msg.standalone .ch-item { padding: 11px 12px; font-size: 15px; border-radius: 10px; }
+  .cj-msg.standalone .ch-item .nm { font-size: 15px; }
+  .cj-msg.standalone .ch-sec { padding: 16px 10px 5px; }
+
+  /* main (the open thread) is the detail pane */
+  .cj-msg.standalone .ch-main {
+    width: 100%;
+    height: 100%;
+  }
+  /* the in-pane desktop thread header is redundant with the app bar */
+  .cj-msg.standalone .ch-head { display: none; }
+  .cj-msg.standalone .ch-stream { padding: 12px 0 6px; }
+  .cj-msg.standalone .msg-row { padding-left: 14px; padding-right: 14px; }
+  .cj-msg.standalone .day-div { margin: 6px 14px 10px; }
+  /* hover-only desktop affordances don't belong on touch */
+  .cj-msg.standalone .msg-actions { display: none !important; }
+  .cj-msg.standalone .msg-gutter { opacity: 1; }
+
+  /* composer pinned to the bottom, safe-area aware */
+  .cj-msg.standalone .composer-wrap {
+    padding: 6px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* master→detail: show one pane at a time */
+  .cj-msg.standalone[data-mview="list"] .ch-main { display: none; }
+  .cj-msg.standalone[data-mview="convo"] .ch-rail { display: none; }
+}

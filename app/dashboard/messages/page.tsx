@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CURRENT_USER } from "../user";
 import "./messages.css";
 
-/* ---- people ---- */
+/* ---- people (current Crown Jewels roster) ---- */
 type Person = { n: string; c: string; bot?: boolean };
 const PEOPLE: Record<string, Person> = {
   al: { n: "Alejandro Bours", c: "#7a1f2b" },
-  ma: { n: "Marisol Vega", c: "#a8404e" },
-  di: { n: "Diego Salas", c: "#6a5577" },
+  ca: { n: "Carlos Encinas", c: "#a8404e" },
+  rb: { n: "Robbie Mathias", c: "#6a5577" },
+  sa: { n: "Santiago Martinez", c: "#3f5d6b" },
   ro: { n: "Rosa Delgado", c: "#4f5e36" },
   bot: { n: "Crown Bot", c: "#511319", bot: true },
 };
@@ -34,29 +37,29 @@ const SEED: Record<string, Convo> = {
     type: "ch", name: "sales-desk", topic: "Daily book, availability & orders", members: 5,
     msgs: [
       { p: "bot", t: "6:55 AM", x: "Inbound truck CJ-TRK-0612 confirmed for tomorrow — +900 cs table grapes, +540 cs cucumbers, +320 cs honeydew." },
-      { p: "ma", t: "8:02 AM", x: "Heads up — Calixtro wants to bump cucumbers 36s to 2,000 cs next week. Do we have room after the inbound?" },
-      { p: "di", t: "8:06 AM", x: "Board shows 1,450 available after commitments. With tomorrow's truck we clear it comfortably." },
+      { p: "ca", t: "8:02 AM", x: "Heads up — Calixtro wants to bump cucumbers 36s to 2,000 cs next week. Do we have room after the inbound?" },
+      { p: "sa", t: "8:06 AM", x: "Board shows 1,450 available after commitments. With tomorrow's truck we clear it comfortably." },
       { p: "bot", t: "8:35 AM", x: "New order 348315 — Calixtro Dist., $20,979 (Alejandro). Availability updated.", reacts: [["✓ nice", 3]] },
-      { p: "di", t: "9:01 AM", x: "@Alejandro the Fresh Direct PO came in — N44974, one line of large cukes. Confirmed back already." },
+      { p: "rb", t: "9:01 AM", x: "@Alejandro the Fresh Direct PO came in — N44974, one line of large cukes. Confirmed back already." },
       { p: "al", t: "9:04 AM", x: "Good. Keep honeydew 6s above 300 cs for Calixtro's standing order — don't let the board run dry before Friday." },
-      { p: "ma", t: "9:12 AM", x: "Second PO of the week from Fresh Direct just hit the inbox. Entering it on the Sales Desk now.", reacts: [["🍈 2", 2]] },
+      { p: "ca", t: "9:12 AM", x: "Second PO of the week from Fresh Direct just hit the inbox. Entering it on the Sales Desk now.", reacts: [["🍈 2", 2]] },
     ],
   },
   pricing: {
     type: "ch", name: "pricing", topic: "Daily quote & market moves", members: 4, unread: 3,
     msgs: [
       { p: "bot", t: "6:30 AM", x: "Daily quote sheet sent to 32 customer contacts." },
-      { p: "di", t: "7:42 AM", x: "Market firming on table grapes — two Fresno houses quoting $28 on XLG 18s. We're at $26." },
-      { p: "ma", t: "7:48 AM", x: "Hold $26 through Wednesday, then revisit. Volume matters more than the last dollar this week." },
-      { p: "di", t: "7:50 AM", x: "Agreed. Flagging it on tomorrow's sheet." },
+      { p: "sa", t: "7:42 AM", x: "Market firming on table grapes — two Fresno houses quoting $28 on XLG 18s. We're at $26." },
+      { p: "rb", t: "7:48 AM", x: "Hold $26 through Wednesday, then revisit. Volume matters more than the last dollar this week." },
+      { p: "sa", t: "7:50 AM", x: "Agreed. Flagging it on tomorrow's sheet." },
     ],
   },
   logistics: {
     type: "ch", name: "logistics", topic: "Trucks, cold-chain & crossings", members: 5,
     msgs: [
-      { p: "di", t: "7:15 AM", x: "CJ-TRK-0612 crossed at Mariposa 6:30 AM, dock ETA 11:00. Pulp temps 48–50°F at inspection." },
+      { p: "sa", t: "7:15 AM", x: "CJ-TRK-0612 crossed at Mariposa 6:30 AM, dock ETA 11:00. Pulp temps 48–50°F at inspection." },
       { p: "bot", t: "7:16 AM", x: "Crossing logged — manifest matched to inbound lots RT-114, ROBLE M-7811." },
-      { p: "ma", t: "8:00 AM", x: "Calixtro wants Monday 6 AM delivery window on 348304 — confirmed with their receiver." },
+      { p: "ca", t: "8:00 AM", x: "Calixtro wants Monday 6 AM delivery window on 348304 — confirmed with their receiver." },
     ],
   },
   growers: {
@@ -80,16 +83,16 @@ const SEED: Record<string, Convo> = {
     type: "ch", name: "general", topic: "Company-wide", members: 9,
     msgs: [
       { p: "al", t: "Monday", x: "Strong week — the grape program is fully booked through Friday and the new workspace is live for everyone. Use it, break it, tell me what's missing." },
-      { p: "ma", t: "Monday", x: "The availability board alone is saving me an hour a day.", reacts: [["✓ 4", 4]] },
-      { p: "al", t: "Tuesday", x: "Same — no more radio calls to the warehouse to check counts." },
+      { p: "ca", t: "Monday", x: "The availability board alone is saving me an hour a day.", reacts: [["✓ 4", 4]] },
+      { p: "rb", t: "Tuesday", x: "Same — no more radio calls to the warehouse to check counts." },
     ],
   },
-  "dm-ma": {
-    type: "dm", who: "ma", on: true,
+  "dm-ca": {
+    type: "dm", who: "ca", on: true,
     msgs: [
-      { p: "ma", t: "8:31 AM", x: "Do we have a floor on grapes for Calixtro? They're pushing for $24 on the XLG 18s." },
+      { p: "ca", t: "8:31 AM", x: "Do we have a floor on grapes for Calixtro? They're pushing for $24 on the XLG 18s." },
       { p: "al", t: "8:34 AM", x: "$25 is the floor while the market's firming. If they commit 800+ cs weekly we can talk." },
-      { p: "ma", t: "8:35 AM", x: "Perfect — taking that back to them." },
+      { p: "ca", t: "8:35 AM", x: "Perfect — taking that back to them." },
     ],
   },
   "dm-ro": {
@@ -98,10 +101,10 @@ const SEED: Record<string, Convo> = {
       { p: "ro", t: "9:18 AM", x: "AR snapshot for your 10 AM: $50,488 invoiced this week, one balance open (Calixtro). Grower net is current across all three settlements." },
     ],
   },
-  "dm-di": {
-    type: "dm", who: "di", on: false,
+  "dm-rb": {
+    type: "dm", who: "rb", on: false,
     msgs: [
-      { p: "di", t: "Friday", x: "Calixtro's receiver flagged two short pallets on the last honeydew load — credited and rebilled, all square." },
+      { p: "rb", t: "Friday", x: "Calixtro's receiver flagged two short pallets on the last honeydew load — credited and rebilled, all square." },
     ],
   },
 };
@@ -112,13 +115,13 @@ const SECTIONS: { label: string; items: string[] }[] = [
   { label: "Finance", items: ["accounting"] },
   { label: "Company", items: ["general"] },
 ];
-const DMS = ["dm-ma", "dm-ro", "dm-di"];
+const DMS = ["dm-ca", "dm-ro", "dm-rb"];
 
 /* canned one-shot replies for DMs after you send */
 const REPLIES: Record<string, string> = {
-  "dm-ma": "On it — I'll have their answer before lunch.",
+  "dm-ca": "On it — I'll have their answer before lunch.",
   "dm-ro": "Noted — I'll bring the full register printout to the 10 AM.",
-  "dm-di": "Copy. I'll confirm with the carrier this afternoon.",
+  "dm-rb": "Copy. I'll confirm with the carrier this afternoon.",
 };
 
 const nowTime = () => new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
@@ -144,19 +147,29 @@ export default function MessagesPage() {
   const [current, setCurrent] = useState("sales-desk");
   const [input, setInput] = useState("");
   const [typingWho, setTypingWho] = useState<string | null>(null);
+  // Phone master→detail: "list" shows the conversation list, "convo" the
+  // open thread. Only consulted in the standalone /chat phone layout (CSS
+  // gates it to .standalone @ ≤760px); the dashboard two-pane ignores it.
+  const [mobileView, setMobileView] = useState<"list" | "convo">("list");
   const repliedRef = useRef<Record<string, boolean>>({});
   const streamRef = useRef<HTMLDivElement>(null);
+
+  // Standalone public route (/chat) renders as a REAL full-screen phone chat
+  // app on phones; /dashboard/messages keeps the desktop two-pane workspace.
+  const pathname = usePathname();
+  const standalone = (pathname || "").replace(/\/+$/, "") === "/chat";
 
   const c = convos[current];
 
   useEffect(() => {
     const el = streamRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [current, convos, typingWho]);
+  }, [current, convos, typingWho, mobileView]);
 
   const open = (id: string) => {
     setCurrent(id);
     setConvos((m) => ({ ...m, [id]: { ...m[id], unread: 0 } }));
+    setMobileView("convo"); // phone: tapping a conversation opens the thread
   };
 
   const send = () => {
@@ -187,7 +200,41 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="cj-msg">
+    <div className={`cj-msg${standalone ? " standalone" : ""}`} data-mview={standalone ? mobileView : undefined}>
+      {/* Phone app bar — only the standalone /chat route, only on phones (CSS).
+          List view: workspace name + back-to-/apps. Convo view: back-to-list
+          chevron + the active conversation's title. */}
+      {standalone && (
+        <div className="msg-appbar">
+          {mobileView === "list" ? (
+            <>
+              <Link href="/apps" className="msg-back" aria-label="Back to apps">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2" style={{ width: 18, height: 18 }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </Link>
+              <span className="msg-ab-title">
+                <b>Crown <span className="cj-j cj-joya">Jewels</span></b>
+                <span className="sub">Workspace chat</span>
+              </span>
+            </>
+          ) : (
+            <>
+              <button type="button" className="msg-back" aria-label="Back to conversations" onClick={() => setMobileView("list")}>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2" style={{ width: 18, height: 18 }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              <span className="msg-ab-title">
+                <b>{c.type === "ch" ? `# ${c.name}` : PEOPLE[c.who!].n}</b>
+                <span className="sub">
+                  {c.type === "ch" ? c.topic : c.on ? "Active now" : "Away"}
+                </span>
+              </span>
+            </>
+          )}
+        </div>
+      )}
       <main>
         <div className="chat-card">
           <aside className="ch-rail">

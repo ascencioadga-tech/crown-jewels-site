@@ -93,7 +93,7 @@ export default function AppsLauncher() {
                 <span>Your Crown Jewels workspace</span>
               </span>
             </div>
-            <Link href="/dashboard/messages" className="lux-chat" aria-label="Open chat">
+            <Link href="/chat" className="lux-chat" aria-label="Open chat">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9M7.5 12h6m-6.69 6.31L4.5 20.25V6a2.25 2.25 0 012.25-2.25h10.5A2.25 2.25 0 0119.5 6v8.25a2.25 2.25 0 01-2.25 2.25H9.06a2.25 2.25 0 00-1.59.66z" />
               </svg>
