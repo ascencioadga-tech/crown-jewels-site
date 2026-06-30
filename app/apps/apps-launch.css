@@ -17,13 +17,25 @@
   flex-direction: column;
 }
 
-/* a whisper of warmth at the top — keeps pure white from feeling clinical */
 .lux-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(92% 56% at 50% -12%, rgba(122, 31, 43, 0.05), transparent 60%);
+}
+/* a faint jeweler's guilloché rosette behind the crown — fine engraving that
+   dissolves into the white (the very top stays white). */
+.lux-guilloche {
+  position: absolute;
+  top: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  max-width: 170vw;
+  height: 680px;
+  opacity: 0.04;
+  -webkit-mask-image: radial-gradient(closest-side, #000 22%, transparent 72%);
+  mask-image: radial-gradient(closest-side, #000 22%, transparent 72%);
 }
 
 .lux-main {

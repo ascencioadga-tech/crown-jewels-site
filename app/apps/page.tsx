@@ -33,6 +33,11 @@ const APPS: LaunchApp[] = [
   },
 ];
 
+// A jeweler's guilloché rosette — fine interwoven lines (rotated ellipses),
+// rendered very faintly behind the crown like the engraving on a fine-jewelry
+// certificate. Angles, 2.5° apart over a half-turn.
+const GUILLOCHE = Array.from({ length: 72 }, (_, i) => (i * 180) / 72);
+
 export default function AppsLauncher() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -64,7 +69,15 @@ export default function AppsLauncher() {
 
   return (
     <div className="lux">
-      <div className="lux-bg" aria-hidden="true" />
+      <div className="lux-bg" aria-hidden="true">
+        <svg className="lux-guilloche" viewBox="-110 -110 220 220">
+          <g fill="none" stroke="#7a1f2b" strokeWidth="0.28">
+            {GUILLOCHE.map((a) => (
+              <ellipse key={a} cx="0" cy="0" rx="96" ry="50" transform={`rotate(${a})`} />
+            ))}
+          </g>
+        </svg>
+      </div>
 
       <main className="lux-main">
         <header className="lux-hero">
