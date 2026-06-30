@@ -346,7 +346,6 @@ export default function OrderScanner({ onExtract }: { onExtract: (r: ScanResult)
     <div className="scan-card">
       <div className="scan-head">
         <h2>Generate from a photo or voice</h2>
-        <span className="ai-badge">AI Scan</span>
       </div>
       <p className="scan-sub">
         Take a photo of the customer&apos;s P.O., email, or WhatsApp message — or upload it, or record by voice.
