@@ -54,56 +54,97 @@
   gap: 54px;
 }
 
-/* ---------------- hero ---------------- */
+/* ---------------- hero (personalized welcome) ---------------- */
 .lux-hero {
-  text-align: center;
-  max-width: 660px;
+  width: 100%;
+  max-width: 640px;
 }
 .lux-crest {
   display: block;
-  width: 58px;
+  width: 50px;
   height: auto;
-  margin: 0 auto 24px;
+  margin: 0 auto 26px;
   animation: lux-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.lux-eyebrow {
+/* the welcome row: avatar + greeting on the left, chat button on the right */
+.lux-welcome {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: #7a1f2b;
-  margin-bottom: 18px;
-  animation: lux-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  justify-content: space-between;
+  gap: 20px;
+  animation: lux-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
-.lux-eyebrow .r {
-  width: 32px;
-  height: 1px;
-  background: rgba(122, 31, 43, 0.35);
+.lux-welcome-id {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
-.lux-hero h1 {
+.lux-avatar {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #a8404e, #7a1f2b);
+  color: #fff;
   font-family: var(--font-fraunces), Georgia, serif;
-  font-size: clamp(2.6rem, 6.5vw, 4.2rem);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgba(20, 20, 25, 0.06), 0 14px 28px -14px rgba(122, 31, 43, 0.55);
+}
+.lux-welcome-who {
+  min-width: 0;
+}
+.lux-welcome-who b {
+  display: block;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(1.4rem, 3.4vw, 1.85rem);
   font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: -0.02em;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
   color: #15110f;
-  animation: lux-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
 }
-.lux-hero h1 .dot {
+.lux-welcome-who span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(26, 26, 26, 0.5);
+}
+.lux-chat {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid #e9dcde;
+  background: #fff;
   color: #7a1f2b;
-  font-style: italic;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(20, 20, 25, 0.04), 0 12px 26px -16px rgba(122, 31, 43, 0.4);
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
 }
-.lux-hero p {
-  margin: 18px auto 0;
-  max-width: 46ch;
-  font-size: clamp(14px, 1.5vw, 16px);
-  line-height: 1.6;
-  color: rgba(26, 26, 26, 0.55);
-  animation: lux-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+.lux-chat svg {
+  color: #7a1f2b;
+  transition: color 0.22s ease;
+}
+.lux-chat:hover {
+  transform: translateY(-1px);
+  border-color: #7a1f2b;
+  background: #7a1f2b;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(20, 20, 25, 0.06), 0 18px 34px -16px rgba(122, 31, 43, 0.55);
+}
+.lux-chat:hover svg {
+  color: #fff;
 }
 @keyframes lux-rise {
   from { opacity: 0; transform: translateY(18px); }
@@ -268,10 +309,28 @@
     min-height: 0;
   }
   .lux-screen { height: 130px; }
+  .lux-welcome {
+    gap: 14px;
+  }
+  .lux-welcome-id {
+    gap: 13px;
+  }
+  .lux-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 17px;
+  }
+  .lux-chat span {
+    display: none;
+  }
+  .lux-chat {
+    padding: 11px;
+    border-radius: 50%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lux-crest, .lux-eyebrow, .lux-hero h1, .lux-hero p, .lux-tile {
+  .lux-crest, .lux-welcome, .lux-tile {
     animation: none;
   }
 }
