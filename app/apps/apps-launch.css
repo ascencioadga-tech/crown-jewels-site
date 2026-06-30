@@ -157,7 +157,9 @@
 }
 
 /* ---------------- login gate ---------------- */
-.lux-login {
+/* `.lux-main.lux-login` (two classes) outranks the mobile `.lux-main`
+   flex-start override, so the card stays vertically centered on phones too. */
+.lux-main.lux-login {
   justify-content: center;
 }
 .lux-login-card {
