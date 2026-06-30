@@ -99,20 +99,60 @@
 }
 
 /* ---------------- cards ---------------- */
-.lux-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 28px;
+.lux-carousel {
   width: 100%;
+}
+.lux-track {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 8px 4px 6px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.lux-track::-webkit-scrollbar {
+  display: none;
+}
+.lux-carousel-ctrl {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+.lux-cbtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  color: #7a1f2b;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(20, 20, 25, 0.04), 0 10px 22px -14px rgba(20, 20, 30, 0.3);
+  transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.lux-cbtn:hover:not(:disabled) {
+  border-color: #7a1f2b;
+  transform: translateY(-1px);
+}
+.lux-cbtn:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 .lux-tile {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 368px;
-  max-width: 100%;
+  flex: 0 0 330px;
+  max-width: 85vw;
   min-height: 372px;
+  scroll-snap-align: start;
   background: #ffffff;
   border: 1px solid #ececec;
   border-radius: 20px;
@@ -213,7 +253,6 @@
     justify-content: flex-start;
   }
   .lux-tile {
-    width: 100%;
     min-height: 0;
   }
   .lux-screen { height: 130px; }

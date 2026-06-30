@@ -1,7 +1,9 @@
-// Public app launcher — an elegant, light "front desk" for the two standalone
-// phone apps. White, airy, refined: a Fraunces headline, a thin maroon accent,
-// the crown mark, and two soft cards. No login, no sidebar.
+"use client";
+
+// Public app launcher — an elegant, light "front desk" for the standalone phone
+// apps, presented as a horizontal carousel. White, airy, refined. No login.
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./apps-launch.css";
 
 type Kind = "ship" | "sales";
@@ -32,6 +34,34 @@ const APPS: LaunchApp[] = [
 ];
 
 export default function AppsLauncher() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  const update = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth - 2;
+    setCanPrev(el.scrollLeft > 2);
+    setCanNext(el.scrollLeft < max);
+  }, []);
+
+  useEffect(() => {
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [update]);
+
+  // Synchronous scrollLeft (smooth-scroll is paused in the preview iframe).
+  const scrollByCard = (dir: -1 | 1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".lux-tile");
+    const step = card ? card.getBoundingClientRect().width + 22 : 320;
+    el.scrollLeft += dir * step;
+    update();
+  };
+
   return (
     <div className="lux">
       <div className="lux-bg" aria-hidden="true" />
@@ -53,26 +83,41 @@ export default function AppsLauncher() {
           </p>
         </header>
 
-        <div className="lux-grid">
-          {APPS.map((app) => (
-            <Link key={app.kind} href={app.href} className={`lux-tile lux-${app.kind}`}>
-              <span className="lux-edge" />
-              <div className="lux-screen">
-                <CardArt kind={app.kind} />
-                <span className="lux-badge">{app.badge}</span>
-              </div>
-              <div className="lux-body">
-                <h3>{app.title}</h3>
-                <p>{app.desc}</p>
-                <span className="lux-enter">
-                  Enter
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="lux-carousel">
+          <div className="lux-track" ref={trackRef} onScroll={update}>
+            {APPS.map((app) => (
+              <Link key={app.kind} href={app.href} className={`lux-tile lux-${app.kind}`}>
+                <span className="lux-edge" />
+                <div className="lux-screen">
+                  <CardArt kind={app.kind} />
+                  <span className="lux-badge">{app.badge}</span>
+                </div>
+                <div className="lux-body">
+                  <h3>{app.title}</h3>
+                  <p>{app.desc}</p>
+                  <span className="lux-enter">
+                    Enter
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="lux-carousel-ctrl">
+            <button type="button" className="lux-cbtn" aria-label="Previous" disabled={!canPrev} onClick={() => scrollByCard(-1)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button type="button" className="lux-cbtn" aria-label="Next" disabled={!canNext} onClick={() => scrollByCard(1)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </div>
         </div>
       </main>
     </div>
