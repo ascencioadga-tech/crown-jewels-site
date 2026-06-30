@@ -1,12 +1,8 @@
-// Public app launcher — a cinematic "stage" you step into before the apps.
-// Dark maroon-to-black atmosphere with drifting light, a glowing crown, and the
-// two standalone phone apps as premium glass tiles. No login, no sidebar.
+// Public app launcher — an elegant, light "front desk" for the two standalone
+// phone apps. White, airy, refined: a Fraunces headline, a thin maroon accent,
+// the crown mark, and two soft cards. No login, no sidebar.
 import Link from "next/link";
-import type { Viewport } from "next";
 import "./apps-launch.css";
-
-// Dark status-bar tint for the launcher (the apps themselves stay white-topped).
-export const viewport: Viewport = { themeColor: "#160406" };
 
 type Kind = "ship" | "sales";
 
@@ -37,19 +33,13 @@ const APPS: LaunchApp[] = [
 
 export default function AppsLauncher() {
   return (
-    <div className="cinema">
-      <div className="cinema-bg" aria-hidden="true">
-        <span className="cinema-orb a" />
-        <span className="cinema-orb b" />
-        <span className="cinema-spot" />
-        <span className="cinema-grain" />
-        <span className="cinema-vignette" />
-      </div>
+    <div className="lux">
+      <div className="lux-bg" aria-hidden="true" />
 
-      <main className="cinema-main">
-        <header className="cinema-hero">
-          <img className="cinema-crest" src="/crown-emblem.png" alt="Crown Jewels" />
-          <div className="cinema-eyebrow">
+      <main className="lux-main">
+        <header className="lux-hero">
+          <img className="lux-crest" src="/crown-emblem.png" alt="Crown Jewels" />
+          <div className="lux-eyebrow">
             <span className="r" />
             Field &amp; Sales
             <span className="r" />
@@ -63,25 +53,24 @@ export default function AppsLauncher() {
           </p>
         </header>
 
-        <div className="cinema-grid">
+        <div className="lux-grid">
           {APPS.map((app) => (
-            <Link key={app.kind} href={app.href} className={`ctile ctile-${app.kind}`}>
-              <span className="ctile-edge" />
-              <div className="ctile-screen">
+            <Link key={app.kind} href={app.href} className={`lux-tile lux-${app.kind}`}>
+              <span className="lux-edge" />
+              <div className="lux-screen">
                 <CardArt kind={app.kind} />
-                <span className="ctile-badge">{app.badge}</span>
+                <span className="lux-badge">{app.badge}</span>
               </div>
-              <div className="ctile-body">
+              <div className="lux-body">
                 <h3>{app.title}</h3>
                 <p>{app.desc}</p>
-                <span className="ctile-enter">
+                <span className="lux-enter">
                   Enter
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </span>
               </div>
-              <span className="ctile-glow" />
             </Link>
           ))}
         </div>
@@ -90,7 +79,7 @@ export default function AppsLauncher() {
   );
 }
 
-/* ---- animated geometric preview per app (sits on the tile's lit "screen") ---- */
+/* ---- animated geometric preview per app (on the card's light screen) ---- */
 function CardArt({ kind }: { kind: Kind }) {
   const vb = { viewBox: "0 0 260 120", preserveAspectRatio: "xMidYMid meet" } as const;
   if (kind === "ship") {
