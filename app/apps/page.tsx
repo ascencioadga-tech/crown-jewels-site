@@ -1,10 +1,12 @@
-// Public app launcher — a small dashboard, styled with the workspace "boxes",
-// to reach the two standalone phone apps: the grower Ship Sheet (/ship-sheet)
-// and the sales New Order desk (/new-order). No login, no sidebar.
+// Public app launcher — a cinematic "stage" you step into before the apps.
+// Dark maroon-to-black atmosphere with drifting light, a glowing crown, and the
+// two standalone phone apps as premium glass tiles. No login, no sidebar.
 import Link from "next/link";
-import "../dashboard/dashboard-home.css";
-import "../dashboard/app-boxes.css";
+import type { Viewport } from "next";
 import "./apps-launch.css";
+
+// Dark status-bar tint for the launcher (the apps themselves stay white-topped).
+export const viewport: Viewport = { themeColor: "#160406" };
 
 type Kind = "ship" | "sales";
 
@@ -29,60 +31,58 @@ const APPS: LaunchApp[] = [
     title: "New Order",
     badge: "Sales app",
     href: "/new-order",
-    desc: "The sales desk builds an order — photograph it, scan it, or key it in — priced against live availability.",
+    desc: "Photograph an order, scan it, or key it in — priced against live availability as the desk builds it.",
   },
 ];
 
 export default function AppsLauncher() {
   return (
-    <div className="cj-home">
-      <main className="home-main">
-        <div className="home-welcome">
-          <div className="flex-eyebrow">
-            <span className="rule" />
-            <span className="eyebrow-text">Crown Jewels · Apps</span>
+    <div className="cinema">
+      <div className="cinema-bg" aria-hidden="true">
+        <span className="cinema-orb a" />
+        <span className="cinema-orb b" />
+        <span className="cinema-spot" />
+        <span className="cinema-grain" />
+        <span className="cinema-vignette" />
+      </div>
+
+      <main className="cinema-main">
+        <header className="cinema-hero">
+          <img className="cinema-crest" src="/crown-emblem.png" alt="Crown Jewels" />
+          <div className="cinema-eyebrow">
+            <span className="r" />
+            Field &amp; Sales
+            <span className="r" />
           </div>
           <h1>
-            Open an app<span className="accent">.</span>
+            Open an app<span className="dot">.</span>
           </h1>
           <p>
             The grower&apos;s Ship Sheet and the sales desk&apos;s New Order —
             built for the phone, ready to demo.
           </p>
-        </div>
+        </header>
 
-        <div className="apps-launch">
+        <div className="cinema-grid">
           {APPS.map((app) => (
-            <div className="appbox-cell" key={app.kind}>
-              <Link href={app.href} className="appbox">
-                <div className="appbox-top">
-                  <div className="appbox-head">
-                    <img className="appbox-crown" src="/crown-emblem.png" alt="Crown Jewels" />
-                    <span className="appbox-badge">
-                      <BadgeIcon kind={app.kind} />
-                      {app.badge}
-                    </span>
-                  </div>
-                  <span className="appbox-rule" />
-                  <div className="appbox-art">
-                    <CardArt kind={app.kind} />
-                  </div>
-                </div>
-                <div className="appbox-foot">
-                  <div className="appbox-title-row">
-                    <h3>{app.title}</h3>
-                    <span className="appbox-live">
-                      <span className="dot" />
-                      Live
-                    </span>
-                  </div>
-                  <p>{app.desc}</p>
-                  <span className="appbox-open">
-                    Open <span className="arr">→</span>
-                  </span>
-                </div>
-              </Link>
-            </div>
+            <Link key={app.kind} href={app.href} className={`ctile ctile-${app.kind}`}>
+              <span className="ctile-edge" />
+              <div className="ctile-screen">
+                <CardArt kind={app.kind} />
+                <span className="ctile-badge">{app.badge}</span>
+              </div>
+              <div className="ctile-body">
+                <h3>{app.title}</h3>
+                <p>{app.desc}</p>
+                <span className="ctile-enter">
+                  Enter
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </div>
+              <span className="ctile-glow" />
+            </Link>
           ))}
         </div>
       </main>
@@ -90,29 +90,7 @@ export default function AppsLauncher() {
   );
 }
 
-/* ---- badge pill icon ---- */
-function BadgeIcon({ kind }: { kind: Kind }) {
-  const p = { width: 13, height: 13, viewBox: "0 0 16 16", fill: "none", stroke: "#7a7f86" } as const;
-  if (kind === "ship") {
-    return (
-      <svg {...p} strokeWidth={1.4} strokeLinejoin="round" strokeLinecap="round">
-        <path d="M1.5 4h7.5v6.5h-7.5z" />
-        <path d="M9 6h3l2 2.2v2.3H9z" />
-        <circle cx="4.5" cy="12" r="1.3" />
-        <circle cx="11.5" cy="12" r="1.3" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...p} strokeWidth={1.5} strokeLinecap="round">
-      <line x1="4" y1="4" x2="13" y2="4" />
-      <line x1="4" y1="8" x2="13" y2="8" />
-      <line x1="4" y1="12" x2="13" y2="12" />
-    </svg>
-  );
-}
-
-/* ---- animated geometric preview per app ---- */
+/* ---- animated geometric preview per app (sits on the tile's lit "screen") ---- */
 function CardArt({ kind }: { kind: Kind }) {
   const vb = { viewBox: "0 0 260 120", preserveAspectRatio: "xMidYMid meet" } as const;
   if (kind === "ship") {
